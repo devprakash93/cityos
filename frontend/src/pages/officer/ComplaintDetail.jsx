@@ -175,7 +175,7 @@ export default function OfficerComplaintDetail() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
                 <div>

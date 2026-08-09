@@ -150,7 +150,7 @@ export default function CitizenDashboard() {
       {/* My Complaint Stats */}
       <div>
         <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">📋 {t('My Complaints')}</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-sm">
             <p className="text-3xl font-bold text-orange-500">{loading ? '—' : stats.open}</p>
             <p className="text-sm text-slate-500 mt-1">{t('Active')}</p>

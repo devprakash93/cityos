@@ -29,7 +29,7 @@ export default function AuthLayout() {
         </div>
 
         {/* Bottom Feature Grid */}
-        <div className="relative z-10 grid grid-cols-2 gap-6 mt-12">
+        <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md">
               <Activity className="w-5 h-5 text-green-400" />

@@ -154,7 +154,7 @@ export default function ComplaintDetail() {
           {/* Main Info */}
           <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-slate-900 border-b border-slate-100 pb-3">Complaint Details</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-slate-500 text-xs uppercase tracking-wider">Category</p>
                 <p className="font-medium text-slate-900 mt-1">{complaint.category}</p>

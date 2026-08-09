@@ -101,7 +101,7 @@ export default function SystemHealth() {
       {health && (
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
           <h2 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide">Resource Usage</h2>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[
               { label: 'CPU Usage', value: health.cpu_usage },
               { label: 'Memory Usage', value: health.memory_usage },

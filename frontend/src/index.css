@@ -32,3 +32,10 @@ body {
     color: white;
   }
 }
+
+.table-wrapper {
+  @apply w-full overflow-x-auto;
+}
+table {
+  @apply min-w-full;
+}

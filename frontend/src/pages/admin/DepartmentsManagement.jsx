@@ -92,7 +92,7 @@ export default function DepartmentsManagement() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 divide-x divide-slate-100">
+                <div className="grid grid-cols-1 md:grid-cols-3 divide-x divide-slate-100">
                   <div className="p-4 text-center">
                     <p className="text-xl font-bold text-slate-800">{dept.officer_count ?? '—'}</p>
                     <p className="text-[11px] text-slate-400 mt-0.5">Officers</p>
