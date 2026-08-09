@@ -64,7 +64,6 @@ import Reports from './pages/admin/Reports';
 import AdminAnalytics from './pages/admin/Analytics';
 import IoTControlRoom from './pages/admin/IoTControlRoom';
 import ComplaintsAdmin from './pages/admin/ComplaintsAdmin';
-import OfficerComplaintDetail from './pages/officer/ComplaintDetail';
 import EmergencyControl from './pages/admin/EmergencyControl';
 import DisasterManagement from './pages/admin/DisasterManagement';
 import SystemHealth from './pages/admin/SystemHealth';
