@@ -35,3 +35,6 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # noqa: F40
 # Email: use SMTP in production
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 WHITENOISE_MANIFEST_STRICT = False
+
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
