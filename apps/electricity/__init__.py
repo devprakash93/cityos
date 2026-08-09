@@ -1,0 +1,1 @@
+"""Electricity __init__."""

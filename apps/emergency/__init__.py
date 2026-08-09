@@ -1,0 +1,1 @@
+"""Emergency __init__."""

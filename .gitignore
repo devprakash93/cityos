@@ -1,0 +1,34 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+cityos_dev.sqlite3
+media/
+.env
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Frontend (React/Vite)
+node_modules/
+dist/
+.DS_Store
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/dist/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
