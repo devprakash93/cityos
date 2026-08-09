@@ -154,7 +154,6 @@ class Command(BaseCommand):
                 name=name,
                 defaults={
                     "bin_type": bin_type,
-                    "address": address,
                     "capacity_liters": 200,
                 },
             )
@@ -272,8 +271,5 @@ class Command(BaseCommand):
         for name, lat, lng, area in stations:
             AQIStation.objects.get_or_create(
                 name=name,
-                defaults={
-                    "area_name": area,
-                },
             )
         self.stdout.write("  - AQI stations")
