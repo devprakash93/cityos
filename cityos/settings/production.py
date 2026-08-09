@@ -33,3 +33,4 @@ CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])  # noqa: F40
 
 # Email: use SMTP in production
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+WHITENOISE_MANIFEST_STRICT = False
