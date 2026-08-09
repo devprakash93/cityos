@@ -135,8 +135,6 @@ class Command(BaseCommand):
                 code=code,
                 defaults={
                     "name": name,
-                    "location_lat": Decimal(str(lat)),
-                    "location_lng": Decimal(str(lng)),
                     "road_type": road_type,
                     "speed_limit_kmh": limit,
                 },
@@ -156,8 +154,6 @@ class Command(BaseCommand):
                 name=name,
                 defaults={
                     "bin_type": bin_type,
-                    "location_lat": Decimal(str(lat)),
-                    "location_lng": Decimal(str(lng)),
                     "address": address,
                     "capacity_liters": 200,
                 },
@@ -175,8 +171,6 @@ class Command(BaseCommand):
                 name=name,
                 defaults={
                     "source_type": source_type,
-                    "location_lat": Decimal(str(lat)),
-                    "location_lng": Decimal(str(lng)),
                     "capacity_million_liters": Decimal(str(capacity)),
                 },
             )
@@ -193,8 +187,6 @@ class Command(BaseCommand):
                 code=code,
                 defaults={
                     "name": name,
-                    "location_lat": Decimal(str(lat)),
-                    "location_lng": Decimal(str(lng)),
                     "max_load_kw": Decimal(str(max_load)),
                     "total_consumers": consumers,
                 },
@@ -229,8 +221,6 @@ class Command(BaseCommand):
                     stop_order=order,
                     defaults={
                         "name": stop_name,
-                        "location_lat": Decimal(str(lat)),
-                        "location_lng": Decimal(str(lng)),
                     },
                 )
 
@@ -268,8 +258,6 @@ class Command(BaseCommand):
                 defaults={
                     "responder_type": resp_type,
                     "status": "AVAILABLE",
-                    "location_lat": Decimal("28.6139"),
-                    "location_lng": Decimal("77.2090"),
                 },
             )
         self.stdout.write("  - Emergency responders")
@@ -285,8 +273,6 @@ class Command(BaseCommand):
             AQIStation.objects.get_or_create(
                 name=name,
                 defaults={
-                    "location_lat": Decimal(str(lat)),
-                    "location_lng": Decimal(str(lng)),
                     "area_name": area,
                 },
             )
