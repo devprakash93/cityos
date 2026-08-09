@@ -2,11 +2,22 @@
 CityOS Django Settings — Production
 """
 from .base import *  # noqa: F401, F403
+import dj_database_url
+import os
 
 DEBUG = False
 
 # In production, explicitly list allowed hosts
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])  # noqa: F405
+if "RENDER_EXTERNAL_HOSTNAME" in os.environ:
+    ALLOWED_HOSTS.append(os.environ["RENDER_EXTERNAL_HOSTNAME"])
+
+# Database configuration for Render / production
+if "DATABASE_URL" in os.environ:
+    DATABASES["default"] = dj_database_url.config(  # noqa: F405
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 
 # HTTPS security settings
 SECURE_SSL_REDIRECT = True
