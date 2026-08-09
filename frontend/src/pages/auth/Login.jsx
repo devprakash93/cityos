@@ -78,11 +78,26 @@ export default function Login() {
         </Button>
       </div>
 
-      <div className="mt-4 text-center text-sm text-slate-500">
-        Demo Accounts:<br/>
-        Citizen: citizen@cityos.gov<br/>
-        Admin: admin@cityos.gov<br/>
-        (Password: RoleName@1234)
+      <div className="mt-8 pt-6 border-t border-slate-100">
+        <p className="text-xs font-semibold text-slate-900 mb-3 uppercase tracking-wider">Demo Accounts</p>
+        <div className="grid grid-cols-2 gap-3 text-xs text-slate-600">
+          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <span className="font-semibold text-slate-900 block mb-1">Admin</span>
+            admin@cityos.gov<br/>Admin@1234
+          </div>
+          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <span className="font-semibold text-slate-900 block mb-1">Officer</span>
+            officer@cityos.gov<br/>Officer@1234
+          </div>
+          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <span className="font-semibold text-slate-900 block mb-1">Worker</span>
+            worker@cityos.gov<br/>Worker@1234
+          </div>
+          <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+            <span className="font-semibold text-slate-900 block mb-1">Citizen</span>
+            citizen@cityos.gov<br/>Citizen@1234
+          </div>
+        </div>
       </div>
     </form>
   );
