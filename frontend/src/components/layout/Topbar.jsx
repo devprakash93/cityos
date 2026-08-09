@@ -143,7 +143,9 @@ export default function Topbar({ setSidebarOpen }) {
             </div>
             <div className="hidden sm:flex flex-col items-start leading-tight">
               <span className="text-xs font-semibold text-slate-800">{userName}</span>
-              <span className="text-[10px] text-slate-400">Super Admin</span>
+              <span className="text-[10px] text-slate-400">
+                {user?.role?.name ? user.role.name.replace('_', ' ') : (typeof user?.role === 'string' ? user.role.replace('_', ' ') : 'User')}
+              </span>
             </div>
             <ChevronDown className="w-3 h-3 text-slate-400 hidden sm:block" />
           </button>
