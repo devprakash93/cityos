@@ -120,12 +120,12 @@ class Command(BaseCommand):
         officer_role = Role.objects.get(name=Role.OFFICER)
         worker_role = Role.objects.get(name=Role.FIELD_WORKER)
         citizen_role = Role.objects.get(name=Role.CITIZEN)
-        traffic_dept = Department.objects.get(code=Department.TRAFFIC)
+        demo_dept = Department.objects.get(code=Department.CITIZEN_SERVICES)
 
         users = [
             ("admin@cityos.gov", "admin", "System", "Administrator", admin_role, None, "Admin@1234"),
-            ("officer@cityos.gov", "officer_traffic", "Raj", "Sharma", officer_role, traffic_dept, "Officer@1234"),
-            ("worker@cityos.gov", "worker_01", "Suresh", "Kumar", worker_role, traffic_dept, "Worker@1234"),
+            ("officer@cityos.gov", "officer_demo", "Raj", "Sharma", officer_role, demo_dept, "Officer@1234"),
+            ("worker@cityos.gov", "worker_01", "Suresh", "Kumar", worker_role, demo_dept, "Worker@1234"),
             ("citizen@cityos.gov", "citizen_01", "Priya", "Patel", citizen_role, None, "Citizen@1234"),
         ]
 
