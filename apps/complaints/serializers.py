@@ -107,13 +107,21 @@ class ComplaintCreateSerializer(serializers.ModelSerializer):
             category = attrs.get("category")
             dept_map = {
                 "ROAD": "CITIZEN_SERVICES",
-                "WATER": "WATER",
+                "STREET_LIGHT": "ELECTRICITY",
+                "GARBAGE": "WASTE",
+                "DRAINAGE": "WASTE",
+                "WATER_SUPPLY": "WATER",
+                "WATER_LEAKAGE": "WATER",
                 "ELECTRICITY": "ELECTRICITY",
-                "WASTE": "WASTE",
-                "TRAFFIC": "TRAFFIC",
-                "POLLUTION": "POLLUTION",
+                "TRAFFIC_SIGNAL": "TRAFFIC",
                 "TRANSPORT": "TRANSPORT",
-                "EMERGENCY": "EMERGENCY",
+                "ROAD_BLOCKAGE": "TRAFFIC",
+                "POLLUTION": "POLLUTION",
+                "STRAY_ANIMAL": "CITIZEN_SERVICES",
+                "PUBLIC_TOILET": "WASTE",
+                "FLOODING": "EMERGENCY",
+                "CYCLONE": "EMERGENCY",
+                "OTHER": "CITIZEN_SERVICES",
             }
             dept_code = dept_map.get(category)
             if dept_code:
