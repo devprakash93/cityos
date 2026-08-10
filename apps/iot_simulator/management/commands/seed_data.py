@@ -11,6 +11,7 @@ from decimal import Decimal
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from apps.accounts.models import Role, Department, CustomUser, UserProfile
+from apps.geography.models import State, District, City, Zone, Ward, Location
 from apps.traffic.models import TrafficZone
 from apps.waste.models import WasteBin
 from apps.water.models import WaterSource
@@ -38,6 +39,7 @@ class Command(BaseCommand):
         self._seed_roles()
         self._seed_departments()
         self._seed_users()
+        self._seed_geography()
         self._seed_traffic_zones()
         self._seed_waste_bins()
         self._seed_water_sources()
@@ -56,6 +58,7 @@ class Command(BaseCommand):
         self.stdout.write("  Citizen:      citizen@cityos.gov / Citizen@1234")
 
     def _reset(self):
+        State.objects.all().delete()
         CustomUser.objects.filter(email__endswith="@cityos.gov").delete()
         TrafficZone.objects.all().delete()
         WasteBin.objects.all().delete()
@@ -65,6 +68,24 @@ class Command(BaseCommand):
         EmergencyContact.objects.all().delete()
         Responder.objects.all().delete()
         AQIStation.objects.all().delete()
+
+    def _seed_geography(self):
+        state, _ = State.objects.get_or_create(code="OD", defaults={"name": "Odisha"})
+        dist_cuttack, _ = District.objects.get_or_create(state=state, name="Cuttack")
+        dist_khordha, _ = District.objects.get_or_create(state=state, name="Khordha")
+        
+        cuttack, _ = City.objects.get_or_create(district=dist_cuttack, name="Cuttack", defaults={"is_default": True, "latitude": Decimal("20.4625"), "longitude": Decimal("85.8830")})
+        bbsr, _ = City.objects.get_or_create(district=dist_khordha, name="Bhubaneswar", defaults={"is_default": False, "latitude": Decimal("20.2961"), "longitude": Decimal("85.8245")})
+
+        cda, _ = Zone.objects.get_or_create(city=cuttack, name="CDA")
+        old_town, _ = Zone.objects.get_or_create(city=bbsr, name="Old Town")
+        
+        w1, _ = Ward.objects.get_or_create(city=cuttack, number=1, defaults={"zone": cda})
+        w2, _ = Ward.objects.get_or_create(city=bbsr, number=2, defaults={"zone": old_town})
+
+        Location.objects.get_or_create(city=cuttack, address="CDA Sector 6", defaults={"latitude": Decimal("20.4700"), "longitude": Decimal("85.8800"), "ward": w1})
+        Location.objects.get_or_create(city=bbsr, address="Old Town Market", defaults={"latitude": Decimal("20.2400"), "longitude": Decimal("85.8300"), "ward": w2})
+        self.stdout.write("  - Geography")
 
     def _seed_roles(self):
         roles = [
@@ -130,11 +151,13 @@ class Command(BaseCommand):
             ("Dwarka Sector 21", "DWK-21", 28.5528, 77.0588, "ARTERIAL", 60),
             ("Karol Bagh Market", "KB-01", 28.6519, 77.1906, "LOCAL", 30),
         ]
+        cda = Zone.objects.filter(name="CDA").first()
         for name, code, lat, lng, road_type, limit in zones:
             TrafficZone.objects.get_or_create(
                 code=code,
                 defaults={
                     "name": name,
+                    "zone": cda,
                     "road_type": road_type,
                     "speed_limit_kmh": limit,
                 },
@@ -149,11 +172,14 @@ class Command(BaseCommand):
             ("Bin D - Hospital", "HAZARDOUS", 28.6250, 77.2050, "City Hospital"),
             ("Bin E - Residential", "GENERAL", 28.6600, 77.2250, "Residential Block 5"),
         ]
+        cuttack = City.objects.filter(name="Cuttack").first()
         for name, bin_type, lat, lng, address in bins_data:
+            loc, _ = Location.objects.get_or_create(city=cuttack, address=address, defaults={"latitude": Decimal(str(lat)), "longitude": Decimal(str(lng))})
             WasteBin.objects.get_or_create(
                 name=name,
                 defaults={
                     "bin_type": bin_type,
+                    "location": loc,
                     "capacity_liters": 200,
                 },
             )
@@ -165,11 +191,14 @@ class Command(BaseCommand):
             ("East Treatment Plant", "TREATMENT_PLANT", 28.6500, 77.3000, 30.0),
             ("Central Borewell", "BOREWELL", 28.6300, 77.2200, 5.0),
         ]
+        cuttack = City.objects.filter(name="Cuttack").first()
         for name, source_type, lat, lng, capacity in sources:
+            loc, _ = Location.objects.get_or_create(city=cuttack, address=name, defaults={"latitude": Decimal(str(lat)), "longitude": Decimal(str(lng))})
             WaterSource.objects.get_or_create(
                 name=name,
                 defaults={
                     "source_type": source_type,
+                    "location": loc,
                     "capacity_million_liters": Decimal(str(capacity)),
                 },
             )
@@ -181,11 +210,13 @@ class Command(BaseCommand):
             ("South Grid Zone", "SGRID-01", 28.5800, 77.1800, 4000, 8000),
             ("East Grid Zone", "EGRID-01", 28.6300, 77.3500, 3500, 7000),
         ]
+        cda = Zone.objects.filter(name="CDA").first()
         for name, code, lat, lng, max_load, consumers in grid_zones:
             GridZone.objects.get_or_create(
                 code=code,
                 defaults={
                     "name": name,
+                    "zone": cda,
                     "max_load_kw": Decimal(str(max_load)),
                     "total_consumers": consumers,
                 },
@@ -197,11 +228,13 @@ class Command(BaseCommand):
             ("101", "Route 101 — ISBT to Airport", "ISBT Kashmiri Gate", "IGI Airport T3", 28.5, 45.0),
             ("202", "Route 202 — Dwarka to Connaught Place", "Dwarka Sec 21", "Connaught Place", 22.0, 30.0),
         ]
+        cuttack = City.objects.filter(name="Cuttack").first()
         for route_num, name, origin, dest, dist, fare in routes_data:
             route, _ = BusRoute.objects.get_or_create(
                 route_number=route_num,
                 defaults={
                     "name": name,
+                    "city": cuttack,
                     "origin": origin,
                     "destination": dest,
                     "distance_km": Decimal(str(dist)),
@@ -215,11 +248,13 @@ class Command(BaseCommand):
                 (f"{dest}", 28.5562, 77.1000, 3),
             ]
             for stop_name, lat, lng, order in stops:
+                loc, _ = Location.objects.get_or_create(city=cuttack, address=stop_name, defaults={"latitude": Decimal(str(lat)), "longitude": Decimal(str(lng))})
                 BusStop.objects.get_or_create(
                     route=route,
                     stop_order=order,
                     defaults={
                         "name": stop_name,
+                        "location": loc,
                     },
                 )
 
@@ -268,8 +303,13 @@ class Command(BaseCommand):
             ("Station Centre", 28.6300, 77.2200, "Central Delhi"),
             ("Station East", 28.6200, 77.3500, "East Delhi"),
         ]
+        cuttack = City.objects.filter(name="Cuttack").first()
         for name, lat, lng, area in stations:
+            loc, _ = Location.objects.get_or_create(city=cuttack, address=name, defaults={"latitude": Decimal(str(lat)), "longitude": Decimal(str(lng))})
             AQIStation.objects.get_or_create(
                 name=name,
+                defaults={
+                    "location": loc,
+                },
             )
         self.stdout.write("  - AQI stations")
