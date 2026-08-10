@@ -10,6 +10,15 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to attach JWT token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Response interceptor to handle 401s globally (e.g. redirect to login)
 api.interceptors.response.use(
   (response) => response,

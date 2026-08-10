@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     fetchProfile();
 
     const handleUnauthorized = () => {
+      localStorage.removeItem('access_token');
       setUser(null);
     };
     window.addEventListener('auth-unauthorized', handleUnauthorized);
@@ -36,6 +37,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login/', { email, password });
       if (response.data.success) {
+        if (response.data.tokens?.access) {
+          localStorage.setItem('access_token', response.data.tokens.access);
+        }
         await fetchProfile();
         return { success: true };
       }
@@ -76,6 +80,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Logout error', error);
     } finally {
+      localStorage.removeItem('access_token');
       setUser(null);
     }
   };
