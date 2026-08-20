@@ -28,6 +28,7 @@ import Announcements from './pages/citizen/Announcements';
 import Statistics from './pages/citizen/Statistics';
 import CitizenSettings from './pages/citizen/Settings';
 import ActivityHistory from './pages/citizen/ActivityHistory';
+import CityServices from './pages/citizen/CityServices';
 
 // Officer Pages
 import OfficerDashboard from './pages/officer/Dashboard';
@@ -109,6 +110,7 @@ function App() {
                 <Route path="/citizen/notifications" element={<Notifications />} />
                 <Route path="/citizen/statistics" element={<Statistics />} />
                 <Route path="/citizen/settings" element={<CitizenSettings />} />
+                <Route path="/citizen/services" element={<CityServices />} />
               </Route>
             </Route>
 
