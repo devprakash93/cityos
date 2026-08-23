@@ -168,7 +168,13 @@ export default function UsersManagement() {
                       </td>
                       <td className="px-6 py-3"><RoleBadge role={u.role_name} /></td>
                       <td className="px-6 py-3 text-slate-600 text-xs">{u.department_name || '—'}</td>
-                      <td className="px-6 py-3 text-slate-600 text-xs">{u.profile?.city_ref_name || u.profile?.city || '—'}</td>
+                      <td className="px-6 py-3 text-slate-600 text-xs font-medium">
+                        {(u.role_name === 'OFFICER' || u.role_name === 'FIELD_WORKER' || u.role_name === 'SUPER_ADMIN') ? (
+                          <span className="text-blue-700 bg-blue-50 px-2 py-0.5 rounded">All Odisha</span>
+                        ) : (
+                          u.profile?.city_ref_name || u.profile?.city || '—'
+                        )}
+                      </td>
                       <td className="px-6 py-3">
                         {u.is_active ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-600">

@@ -331,19 +331,26 @@ class Command(BaseCommand):
         # Core demo accounts
         USERS = [
             ("admin@cityos.gov",             "admin",           "System",   "Administrator", admin_role,   None,                       "Admin@1234"),
-            ("officer@cityos.gov",           "officer_demo",    "Raj",      "Sharma",        officer_role, depts[Department.CITIZEN_SERVICES], "Officer@1234"),
-            ("worker@cityos.gov",            "worker_01",       "Suresh",   "Kumar",         worker_role,  depts[Department.CITIZEN_SERVICES], "Worker@1234"),
             ("citizen@cityos.gov",           "citizen_01",      "Priya",    "Patel",         citizen_role, None,                       "Citizen@1234"),
-            # Extra officers per department
-            ("traffic.officer@cityos.gov",   "officer_traffic", "Arjun",    "Nayak",         officer_role, depts[Department.TRAFFIC],          "Officer@1234"),
-            ("waste.officer@cityos.gov",     "officer_waste",   "Sita",     "Dash",          officer_role, depts[Department.WASTE],            "Officer@1234"),
-            ("water.officer@cityos.gov",     "officer_water",   "Bikash",   "Jena",          officer_role, depts[Department.WATER],            "Officer@1234"),
-            ("electricity.officer@cityos.gov","officer_power",  "Deepak",   "Panda",         officer_role, depts[Department.ELECTRICITY],      "Officer@1234"),
-            ("emergency.officer@cityos.gov", "officer_emrg",   "Kavita",   "Mohapatra",     officer_role, depts[Department.EMERGENCY],        "Officer@1234"),
-            # Extra workers
-            ("worker02@cityos.gov",          "worker_02",       "Ramesh",   "Behera",        worker_role,  depts[Department.TRAFFIC],          "Worker@1234"),
-            ("worker03@cityos.gov",          "worker_03",       "Sarita",   "Sahu",          worker_role,  depts[Department.WASTE],            "Worker@1234"),
-            ("worker04@cityos.gov",          "worker_04",       "Prasad",   "Mishra",        worker_role,  depts[Department.WATER],            "Worker@1234"),
+            ("officer@cityos.gov",           "officer_demo",    "Demo",     "Officer",       officer_role, depts[Department.CITIZEN_SERVICES], "Officer@1234"),
+            ("worker@cityos.gov",            "worker_demo",     "Demo",     "Worker",        worker_role,  depts[Department.CITIZEN_SERVICES], "Worker@1234"),
+            
+            # OFFICERS
+            ("traffic.officer@cityos.gov",   "raj_sharma",      "Raj",      "Sharma",        officer_role, depts[Department.TRAFFIC],    "Officer@1234"),
+            ("water.officer@cityos.gov",     "anita_das",       "Anita",    "Das",           officer_role, depts[Department.WATER],      "Officer@1234"),
+            ("waste.officer@cityos.gov",     "rahul_patnaik",   "Rahul",    "Patnaik",       officer_role, depts[Department.WASTE],      "Officer@1234"),
+            ("electricity.officer@cityos.gov","priyanka_sahu",  "Priyanka", "Sahu",          officer_role, depts[Department.ELECTRICITY],"Officer@1234"),
+            ("transport.officer@cityos.gov", "amit_kumar",      "Amit",     "Kumar",         officer_role, depts[Department.TRANSPORT],  "Officer@1234"),
+            ("pollution.officer@cityos.gov", "neha_das",        "Neha",     "Das",           officer_role, depts[Department.POLLUTION],  "Officer@1234"),
+
+            # FIELD WORKERS
+            ("traffic.worker@cityos.gov",    "suresh_kumar",    "Suresh",   "Kumar",         worker_role,  depts[Department.TRAFFIC],    "Worker@1234"),
+            ("water.worker@cityos.gov",      "ramesh_das",      "Ramesh",   "Das",           worker_role,  depts[Department.WATER],      "Worker@1234"),
+            ("waste.worker@cityos.gov",      "bikash_nayak",    "Bikash",   "Nayak",         worker_role,  depts[Department.WASTE],      "Worker@1234"),
+            ("electricity.worker@cityos.gov","manoj_sahu",      "Manoj",    "Sahu",          worker_role,  depts[Department.ELECTRICITY],"Worker@1234"),
+            ("transport.worker@cityos.gov",  "deepak_rout",     "Deepak",   "Rout",          worker_role,  depts[Department.TRANSPORT],  "Worker@1234"),
+            ("pollution.worker@cityos.gov",  "santosh_behera",  "Santosh",  "Behera",        worker_role,  depts[Department.POLLUTION],  "Worker@1234"),
+
             # Extra citizens
             ("citizen2@cityos.gov",          "citizen_02",      "Anita",    "Swain",         citizen_role, None,                       "Citizen@1234"),
             ("citizen3@cityos.gov",          "citizen_03",      "Mohan",    "Tripathy",      citizen_role, None,                       "Citizen@1234"),

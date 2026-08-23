@@ -288,59 +288,49 @@ export default function UserModal({ user, onClose, onSuccess }) {
             <div className="space-y-4">
                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">Geography</h3>
                
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <div className="space-y-1">
-                   <label className="text-sm font-medium text-slate-700">State</label>
-                   <select name="state_id" value={formData.state_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                     <option value="">Select State...</option>
-                     {states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                   </select>
+               {(selectedRole === 'OFFICER' || selectedRole === 'FIELD_WORKER') ? (
+                 <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-between">
+                   <div>
+                     <p className="font-bold text-blue-900 text-sm">Jurisdiction: All Odisha</p>
+                     <p className="text-xs text-blue-700 mt-0.5">This user has state-wide operational access.</p>
+                   </div>
+                   <div className="px-3 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold uppercase tracking-wider">State Level</div>
                  </div>
-                 
-                 <div className="space-y-1">
-                   <label className="text-sm font-medium text-slate-700">District</label>
-                   <select name="district_id" value={formData.district_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                     <option value="">Select District...</option>
-                     {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                   </select>
-                 </div>
+               ) : (
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                   <div className="space-y-1">
+                     <label className="text-sm font-medium text-slate-700">State</label>
+                     <select name="state_id" value={formData.state_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
+                       <option value="">Select State...</option>
+                       {states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                     </select>
+                   </div>
+                   
+                   <div className="space-y-1">
+                     <label className="text-sm font-medium text-slate-700">District</label>
+                     <select name="district_id" value={formData.district_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
+                       <option value="">Select District...</option>
+                       {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                     </select>
+                   </div>
 
-                 <div className="space-y-1">
-                   <label className="text-sm font-medium text-slate-700">City {(selectedRole === 'OFFICER' || selectedRole === 'FIELD_WORKER') ? '*' : ''}</label>
-                   <select required={selectedRole === 'OFFICER' || selectedRole === 'FIELD_WORKER'} name="city_id" value={formData.city_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                     <option value="">Select City...</option>
-                     {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                   </select>
+                   <div className="space-y-1">
+                     <label className="text-sm font-medium text-slate-700">City</label>
+                     <select name="city_id" value={formData.city_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
+                       <option value="">Select City...</option>
+                       {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                     </select>
+                   </div>
+                   
+                   <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700">Ward</label>
+                      <select name="ward_id" value={formData.ward_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
+                        <option value="">Select Ward...</option>
+                        {wards.map(w => <option key={w.id} value={w.id}>Ward {w.number} {w.name && `(${w.name})`}</option>)}
+                      </select>
+                   </div>
                  </div>
-                 
-                 {selectedRole === 'FIELD_WORKER' && (
-                    <>
-                     <div className="space-y-1">
-                       <label className="text-sm font-medium text-slate-700">Zone *</label>
-                       <select required name="zone_id" value={formData.zone_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                         <option value="">Select Zone...</option>
-                         {zones.map(z => <option key={z.id} value={z.id}>{z.name}</option>)}
-                       </select>
-                     </div>
-                     <div className="space-y-1">
-                       <label className="text-sm font-medium text-slate-700">Ward *</label>
-                       <select required name="ward_id" value={formData.ward_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                         <option value="">Select Ward...</option>
-                         {wards.map(w => <option key={w.id} value={w.id}>Ward {w.number} {w.name && `(${w.name})`}</option>)}
-                       </select>
-                     </div>
-                    </>
-                 )}
-                 {selectedRole !== 'FIELD_WORKER' && (
-                    <div className="space-y-1">
-                       <label className="text-sm font-medium text-slate-700">Ward</label>
-                       <select name="ward_id" value={formData.ward_id} onChange={handleChange} className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
-                         <option value="">Select Ward...</option>
-                         {wards.map(w => <option key={w.id} value={w.id}>Ward {w.number} {w.name && `(${w.name})`}</option>)}
-                       </select>
-                     </div>
-                 )}
-               </div>
+               )}
             </div>
 
           </form>

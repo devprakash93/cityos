@@ -107,9 +107,9 @@ def get_city_for_user(user):
     if not user or not user.is_authenticated:
         return None
     role = get_user_role_name(user)
-    if role == Role.SUPER_ADMIN:
-        return None  # Admin can see all — views handle ?city_id=
-    # For Citizens and Officers: city is on the user's profile
+    if role in [Role.SUPER_ADMIN, Role.OFFICER, Role.FIELD_WORKER]:
+        return None  # All Odisha jurisdiction — views handle ?city_id=
+    # For Citizens: city is on the user's profile
     profile = getattr(user, 'profile', None)
     if profile:
         return getattr(profile, 'city', None)

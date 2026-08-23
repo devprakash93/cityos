@@ -146,14 +146,6 @@ class StaffCreateSerializer(serializers.ModelSerializer):
             if role.name in [Role.OFFICER, Role.FIELD_WORKER]:
                 if not department:
                     raise serializers.ValidationError({"department_id": f"Department is required for {role.name}."})
-                if not city_id:
-                    raise serializers.ValidationError({"city_id": f"City is required for {role.name}."})
-            
-            if role.name == Role.FIELD_WORKER:
-                if not zone_id:
-                    raise serializers.ValidationError({"zone_id": "Zone is required for FIELD_WORKER."})
-                if not ward_id:
-                    raise serializers.ValidationError({"ward_id": "Ward is required for FIELD_WORKER."})
 
         # Geo Validation
         if city_id:

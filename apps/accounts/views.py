@@ -103,13 +103,5 @@ class OfficerWorkerListView(generics.ListAPIView):
             department=user.department
         ).select_related("role", "department", "profile")
 
-        from apps.geography.permissions import get_city_for_user
-        city = get_city_for_user(user)
-        if city:
-            qs = qs.filter(
-                models.Q(profile__city_ref=city) | 
-                models.Q(profile__ward_ref__city=city)
-            )
-        
         return qs.order_by("first_name", "last_name")
 

@@ -68,13 +68,20 @@ class ComplaintViewSet(RoleFilterMixin, viewsets.ModelViewSet):
     # --- RoleFilterMixin ---
     def _apply_city_filter(self, qs):
         from apps.geography.permissions import get_city_for_user
-        city = get_city_for_user(self.request.user)
+        from apps.accounts.models import Role
+        
+        user = self.request.user
+        role_name = getattr(user.role, 'name', None) if getattr(user, 'role', None) else None
+        
+        if role_name in [Role.SUPER_ADMIN, Role.OFFICER, Role.FIELD_WORKER]:
+            city_id = self.request.query_params.get("city_id")
+            if city_id:
+                return qs.filter(ward__city_id=city_id)
+            return qs
+
+        city = get_city_for_user(user)
         if city:
             return qs.filter(ward__city=city)
-        # For super admin, allow ?city_id= filtering
-        city_id = self.request.query_params.get("city_id")
-        if city_id:
-            return qs.filter(ward__city_id=city_id)
         return qs
 
     def get_queryset_for_citizen(self):
@@ -312,6 +319,15 @@ class TaskViewSet(viewsets.ReadOnlyModelViewSet):
             complaint__department=user.department
         ).select_related("assigned_to", "assigned_by", "complaint")
         
+        from apps.accounts.models import Role
+        role_name = getattr(user.role, 'name', None) if getattr(user, 'role', None) else None
+        
+        if role_name in [Role.SUPER_ADMIN, Role.OFFICER, Role.FIELD_WORKER]:
+            city_id = self.request.query_params.get("city_id")
+            if city_id:
+                qs = qs.filter(complaint__ward__city_id=city_id)
+            return qs
+            
         from apps.geography.permissions import get_city_for_user
         city = get_city_for_user(user)
         if city:
