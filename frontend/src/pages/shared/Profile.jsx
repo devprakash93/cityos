@@ -49,7 +49,6 @@ export default function Profile() {
           bio: formData.bio,
         },
       });
-      await fetchProfile?.();
       setSaved(true);
       setEditing(false);
       setTimeout(() => setSaved(false), 3000);
