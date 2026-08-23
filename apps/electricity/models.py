@@ -80,3 +80,36 @@ class PowerOutage(SimulationTrackingModel):
 
     def __str__(self):
         return f"Outage at {self.zone.name} [{self.status}]"
+
+
+class ElectricityNotice(SimulationTrackingModel):
+    """
+    Scheduled maintenance or general electricity announcements.
+    """
+    TYPE_CHOICES = [
+        ("MAINTENANCE", "Scheduled Maintenance"),
+        ("ANNOUNCEMENT", "General Announcement"),
+        ("OUTAGE_ALERT", "Emergency Outage Alert"),
+    ]
+
+    title = models.CharField(max_length=255)
+    notice_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="ANNOUNCEMENT", db_index=True)
+    description = models.TextField()
+    
+    # Optional area mapping. If blank, it applies city-wide (or system-wide)
+    zone = models.ForeignKey(GridZone, on_delete=models.SET_NULL, null=True, blank=True, related_name="notices")
+    ward = models.ForeignKey("geography.Ward", on_delete=models.SET_NULL, null=True, blank=True, related_name="electricity_notices")
+    
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(null=True, blank=True)
+    
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = "electricity_notices"
+        ordering = ["-start_time"]
+
+    def __str__(self):
+        return f"[{self.notice_type}] {self.title}"

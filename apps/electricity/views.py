@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from core.permissions import IsOfficerOrAdmin
-from .models import GridZone, PowerOutage
-from .serializers import GridZoneSerializer, ElectricityReadingSerializer, PowerOutageSerializer
+from .models import GridZone, PowerOutage, ElectricityNotice
+from .serializers import GridZoneSerializer, ElectricityReadingSerializer, PowerOutageSerializer, ElectricityNoticeSerializer
 
 
 from core.mixins import CityScopeMixin
@@ -64,3 +64,34 @@ class PowerOutageViewSet(CityScopeMixin, viewsets.ModelViewSet):
             if city_id:
                 qs = qs.filter(zone__zone__city_id=city_id)
         return Response(PowerOutageSerializer(qs, many=True).data)
+
+
+@extend_schema(tags=["electricity"])
+class ElectricityNoticeViewSet(CityScopeMixin, viewsets.ModelViewSet):
+    serializer_class = ElectricityNoticeSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["notice_type", "is_active", "ward", "zone"]
+    city_lookup_field = "ward__city"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("zone", "ward", "created_by").order_by("-start_time")
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsOfficerOrAdmin()]
+        return [IsAuthenticated()]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    @action(detail=False, methods=["get"], url_path="active")
+    def active_notices(self, request):
+        from django.utils import timezone
+        qs = self.get_queryset().filter(is_active=True, start_time__lte=timezone.now(), end_time__gte=timezone.now())
+        return Response(self.get_serializer(qs, many=True).data)
+
+    @action(detail=False, methods=["get"], url_path="upcoming")
+    def upcoming_notices(self, request):
+        from django.utils import timezone
+        qs = self.get_queryset().filter(is_active=True, start_time__gt=timezone.now())
+        return Response(self.get_serializer(qs, many=True).data)

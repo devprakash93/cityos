@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import GridZone, ElectricityReading, PowerOutage
+from .models import GridZone, ElectricityReading, PowerOutage, ElectricityNotice
 
 
 class GridZoneSerializer(serializers.ModelSerializer):
@@ -22,4 +22,13 @@ class PowerOutageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PowerOutage
+        fields = "__all__"
+
+class ElectricityNoticeSerializer(serializers.ModelSerializer):
+    zone_name = serializers.CharField(source="zone.name", read_only=True)
+    ward_name = serializers.CharField(source="ward.name", read_only=True)
+    ward_number = serializers.CharField(source="ward.number", read_only=True)
+
+    class Meta:
+        model = ElectricityNotice
         fields = "__all__"

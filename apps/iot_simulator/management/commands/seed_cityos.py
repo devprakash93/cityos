@@ -69,6 +69,8 @@ class Command(BaseCommand):
         self._seed_emergency_alerts(cities)
         self._seed_complaints(cities)
         self._seed_water_schedules_notices(cities)
+        self._seed_electricity_notices(cities)
+        self._seed_power_outages(cities)
         self._seed_announcements(cities)
         self._seed_iot_readings()
 
@@ -1308,3 +1310,118 @@ class Command(BaseCommand):
                     created_notices += 1
 
         self.stdout.write(f"  [OK] {created_scheds} water schedules, {created_notices} water notices seeded")
+
+    def _seed_electricity_notices(self, cities):
+        from apps.electricity.models import ElectricityNotice, GridZone
+        from apps.accounts.models import CustomUser
+        from django.utils import timezone
+        from datetime import timedelta
+        import random
+
+        now = timezone.now()
+        admin = CustomUser.objects.filter(email="admin@cityos.gov").first()
+        created_notices = 0
+
+        for city in cities.values():
+            for ward in city.wards.all():
+                # Scheduled Maintenance (Upcoming)
+                if random.random() > 0.8:
+                    ElectricityNotice.objects.get_or_create(
+                        notice_type="MAINTENANCE", ward=ward, title=f"Scheduled Maintenance in {ward.name or 'Ward '+str(ward.number)}",
+                        defaults={
+                            "description": "Routine transformer upgrade. Power will be cut during this time.",
+                            "start_time": now + timedelta(days=random.randint(1, 3), hours=10),
+                            "end_time": now + timedelta(days=random.randint(1, 3), hours=14),
+                            "created_by": admin
+                        }
+                    )
+                    created_notices += 1
+
+                # Outage Alert (Active)
+                if random.random() > 0.9:
+                    ElectricityNotice.objects.get_or_create(
+                        notice_type="OUTAGE_ALERT", ward=ward, title=f"Emergency Power Cut: {ward.name or 'Ward '+str(ward.number)}",
+                        defaults={
+                            "description": "A major fault was detected. Teams are working on restoration.",
+                            "start_time": now - timedelta(hours=random.randint(1, 4)),
+                            "end_time": now + timedelta(hours=random.randint(2, 6)),
+                            "created_by": admin
+                        }
+                    )
+                    created_notices += 1
+
+                # General Announcement (Active)
+                if random.random() > 0.95:
+                    ElectricityNotice.objects.get_or_create(
+                        notice_type="ANNOUNCEMENT", ward=ward, title="Monsoon Safety Warning",
+                        defaults={
+                            "description": "Please stay away from exposed electrical poles and wires during heavy rain.",
+                            "start_time": now - timedelta(days=1),
+                            "end_time": now + timedelta(days=30),
+                            "created_by": admin
+                        }
+                    )
+                    created_notices += 1
+
+        self.stdout.write(f"  [OK] {created_notices} electricity notices seeded")
+
+    def _seed_power_outages(self, cities):
+        from apps.electricity.models import PowerOutage, GridZone
+        from apps.accounts.models import CustomUser
+        from django.utils import timezone
+        from datetime import timedelta
+        import random
+
+        now = timezone.now()
+        admin = CustomUser.objects.filter(email="admin@cityos.gov").first()
+        created_outages = 0
+        grids = list(GridZone.objects.filter(is_active=True))
+
+        for grid in grids:
+            # Active Outage
+            if random.random() > 0.8:
+                PowerOutage.objects.get_or_create(
+                    zone=grid, status="ACTIVE",
+                    defaults={
+                        "cause": random.choice(["EQUIPMENT_FAILURE", "OVERLOAD", "WEATHER"]),
+                        "description": "Transformer tripped due to overload.",
+                        "affected_households": random.randint(100, 500),
+                        "start_time": now - timedelta(hours=random.randint(1, 3)),
+                        "estimated_restoration": now + timedelta(hours=random.randint(1, 3)),
+                        "reported_by": admin
+                    }
+                )
+                created_outages += 1
+
+            # Restoring Outage
+            if random.random() > 0.85:
+                PowerOutage.objects.get_or_create(
+                    zone=grid, status="RESTORING",
+                    defaults={
+                        "cause": random.choice(["WEATHER", "ACCIDENT"]),
+                        "description": "Tree fell on power lines.",
+                        "affected_households": random.randint(50, 300),
+                        "start_time": now - timedelta(hours=random.randint(2, 5)),
+                        "estimated_restoration": now + timedelta(minutes=30),
+                        "reported_by": admin
+                    }
+                )
+                created_outages += 1
+
+            # Resolved Outage
+            if random.random() > 0.5:
+                PowerOutage.objects.get_or_create(
+                    zone=grid, status="RESOLVED",
+                    defaults={
+                        "cause": "MAINTENANCE",
+                        "description": "Routine maintenance completed.",
+                        "affected_households": random.randint(200, 1000),
+                        "start_time": now - timedelta(days=random.randint(1, 5), hours=4),
+                        "estimated_restoration": now - timedelta(days=random.randint(1, 5), hours=1),
+                        "end_time": now - timedelta(days=random.randint(1, 5), minutes=45),
+                        "reported_by": admin
+                    }
+                )
+                created_outages += 1
+
+        self.stdout.write(f"  [OK] {created_outages} power outages seeded")

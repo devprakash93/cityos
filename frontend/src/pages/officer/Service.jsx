@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import GenericServicePage from '../admin/GenericServicePage';
+import ElectricityManager from './ElectricityManager';
 import { Activity, Trash2, Droplets, Zap, Bus, Wind, Car } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 
@@ -31,6 +32,14 @@ export default function OfficerService() {
       break;
     default:
       serviceConfig = null;
+  }
+
+  if (deptCode === 'ELECTRICITY') {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <ElectricityManager />
+      </div>
+    );
   }
 
   if (!serviceConfig) {
