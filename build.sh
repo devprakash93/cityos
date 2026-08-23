@@ -10,4 +10,3 @@ python manage.py collectstatic --no-input
 
 # Run database migrations
 python manage.py migrate
-python manage.py seed_cityos --reset
