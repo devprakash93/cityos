@@ -71,3 +71,61 @@ class WaterAlert(SimulationTrackingModel):
     class Meta:
         db_table = "water_alerts"
         ordering = ["-triggered_at"]
+
+
+class WaterSchedule(models.Model):
+    """Area-wise daily water supply timings."""
+    city = models.ForeignKey("geography.City", on_delete=models.CASCADE, related_name="water_schedules")
+    ward = models.ForeignKey("geography.Ward", on_delete=models.CASCADE, related_name="water_schedules")
+    
+    morning_start = models.TimeField(null=True, blank=True)
+    morning_end = models.TimeField(null=True, blank=True)
+    evening_start = models.TimeField(null=True, blank=True)
+    evening_end = models.TimeField(null=True, blank=True)
+    days_of_supply = models.CharField(max_length=100, default="Everyday")
+
+    class Meta:
+        db_table = "water_schedules"
+        unique_together = [("city", "ward")]
+
+    def __str__(self):
+        return f"Schedule for {self.ward}, {self.city}"
+
+
+class WaterNotice(models.Model):
+    """Planned or emergency water supply interruptions."""
+    NOTICE_TYPES = [
+        ("PLANNED_CUT", "Planned Water Cut"),
+        ("EMERGENCY_CUT", "Emergency Water Cut"),
+        ("LOW_PRESSURE", "Low Water Pressure"),
+        ("MAINTENANCE", "Pipeline Maintenance"),
+        ("CONTAMINATION", "Water Contamination Alert"),
+    ]
+    STATUS_CHOICES = [
+        ("UPCOMING", "Upcoming"),
+        ("IN_PROGRESS", "In Progress"),
+        ("RESOLVED", "Resolved"),
+    ]
+
+    city = models.ForeignKey("geography.City", on_delete=models.CASCADE, related_name="water_notices")
+    ward = models.ForeignKey("geography.Ward", on_delete=models.SET_NULL, null=True, blank=True, related_name="water_notices")
+    
+    notice_type = models.CharField(max_length=30, choices=NOTICE_TYPES)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    reason = models.CharField(max_length=255, blank=True)
+    
+    start_time = models.DateTimeField()
+    expected_restoration = models.DateTimeField(null=True, blank=True)
+    actual_restoration = models.DateTimeField(null=True, blank=True)
+    
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="UPCOMING")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "water_notices"
+        ordering = ["-start_time"]
+
+    def __str__(self):
+        return f"[{self.status}] {self.title} - {self.city}"

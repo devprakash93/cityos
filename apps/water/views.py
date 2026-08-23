@@ -4,8 +4,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from drf_spectacular.utils import extend_schema
 from core.permissions import IsOfficerOrAdmin
-from .models import WaterSource, WaterAlert
-from .serializers import WaterSourceSerializer, WaterReadingSerializer, WaterAlertSerializer
+from .models import WaterSource, WaterAlert, WaterNotice, WaterSchedule
+from .serializers import (
+    WaterSourceSerializer, WaterReadingSerializer, WaterAlertSerializer,
+    WaterNoticeSerializer, WaterScheduleSerializer
+)
 
 
 from core.mixins import CityScopeMixin
@@ -48,3 +51,39 @@ class WaterAlertViewSet(CityScopeMixin, viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().select_related("source__location__city").order_by("-triggered_at")
+
+
+@extend_schema(tags=["water"])
+class WaterScheduleViewSet(viewsets.ReadOnlyModelViewSet):
+    """Schedules for daily water supply."""
+    serializer_class = WaterScheduleSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["city", "ward"]
+
+    def get_queryset(self):
+        qs = WaterSchedule.objects.select_related("city", "ward")
+        city_id = self.request.query_params.get("city")
+        ward_id = self.request.query_params.get("ward")
+        if city_id:
+            qs = qs.filter(city_id=city_id)
+        if ward_id:
+            qs = qs.filter(ward_id=ward_id)
+        return qs
+
+
+@extend_schema(tags=["water"])
+class WaterNoticeViewSet(viewsets.ReadOnlyModelViewSet):
+    """Planned/emergency interruptions."""
+    serializer_class = WaterNoticeSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ["city", "ward", "status", "notice_type"]
+
+    def get_queryset(self):
+        qs = WaterNotice.objects.select_related("city", "ward")
+        city_id = self.request.query_params.get("city")
+        ward_id = self.request.query_params.get("ward")
+        if city_id:
+            qs = qs.filter(city_id=city_id)
+        if ward_id:
+            qs = qs.filter(ward_id=ward_id)
+        return qs

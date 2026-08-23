@@ -68,6 +68,7 @@ class Command(BaseCommand):
         self._seed_emergency_incidents(cities)
         self._seed_emergency_alerts(cities)
         self._seed_complaints(cities)
+        self._seed_water_schedules_notices(cities)
         self._seed_announcements(cities)
         self._seed_iot_readings()
 
@@ -1224,3 +1225,79 @@ class Command(BaseCommand):
         AQIReading.objects.bulk_create(aqi_readings, ignore_conflicts=True)
 
         self.stdout.write(f"  [OK] IoT readings seeded (traffic/waste/water/electricity/AQI)")
+
+    def _seed_water_schedules_notices(self, cities):
+        from apps.water.models import WaterSchedule, WaterNotice
+        from django.utils import timezone
+        from datetime import time, timedelta
+        import random
+        
+        now = timezone.now()
+        
+        created_scheds = 0
+        created_notices = 0
+        
+        # 1. Schedules
+        for city in cities.values():
+            for ward in city.wards.all():
+                if random.random() > 0.3:
+                    WaterSchedule.objects.get_or_create(
+                        city=city, ward=ward,
+                        defaults={
+                            "morning_start": time(6, 0),
+                            "morning_end": time(8, 0),
+                            "evening_start": time(17, 0),
+                            "evening_end": time(19, 0),
+                            "days_of_supply": "Everyday"
+                        }
+                    )
+                    created_scheds += 1
+                    
+                # 2. Notices
+                # Active notice
+                if random.random() > 0.8:
+                    WaterNotice.objects.get_or_create(
+                        city=city, ward=ward, status="IN_PROGRESS",
+                        defaults={
+                            "notice_type": random.choice(["PLANNED_CUT", "EMERGENCY_CUT", "MAINTENANCE"]),
+                            "title": f"Water Supply Interruption in {ward.name or 'Ward '+str(ward.number)}",
+                            "description": "Please store sufficient water.",
+                            "reason": random.choice(["Pipeline repair", "Pump failure", "Tank maintenance"]),
+                            "start_time": now - timedelta(hours=2),
+                            "expected_restoration": now + timedelta(hours=4),
+                        }
+                    )
+                    created_notices += 1
+                
+                # Upcoming notice
+                if random.random() > 0.9:
+                    WaterNotice.objects.get_or_create(
+                        city=city, ward=ward, status="UPCOMING",
+                        defaults={
+                            "notice_type": "PLANNED_CUT",
+                            "title": f"Planned Pipeline Repair in {ward.name or 'Ward '+str(ward.number)}",
+                            "description": "Routine maintenance scheduled.",
+                            "reason": "Pipeline repair",
+                            "start_time": now + timedelta(days=2, hours=4),
+                            "expected_restoration": now + timedelta(days=2, hours=8),
+                        }
+                    )
+                    created_notices += 1
+                    
+                # Resolved notice
+                if random.random() > 0.7:
+                    WaterNotice.objects.get_or_create(
+                        city=city, ward=ward, status="RESOLVED",
+                        defaults={
+                            "notice_type": "EMERGENCY_CUT",
+                            "title": f"Emergency Leakage in {ward.name or 'Ward '+str(ward.number)}",
+                            "description": "A leakage was detected and fixed.",
+                            "reason": "Emergency leakage",
+                            "start_time": now - timedelta(days=5, hours=4),
+                            "expected_restoration": now - timedelta(days=5, hours=1),
+                            "actual_restoration": now - timedelta(days=5, hours=1),
+                        }
+                    )
+                    created_notices += 1
+
+        self.stdout.write(f"  [OK] {created_scheds} water schedules, {created_notices} water notices seeded")
