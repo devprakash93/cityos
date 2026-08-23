@@ -14,14 +14,14 @@ from .serializers import (
 from core.mixins import CityScopeMixin
 
 @extend_schema(tags=["transport"])
-class BusRouteViewSet(CityScopeMixin, viewsets.ModelViewSet):
+class BusRouteViewSet(viewsets.ModelViewSet):
     serializer_class = BusRouteSerializer
     permission_classes = [IsAuthenticated]
     search_fields = ["route_number", "name", "origin", "destination"]
     city_lookup_field = "city"
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_active=True).select_related("city")
+        return BusRoute.objects.filter(is_active=True).select_related("city")
 
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
@@ -42,13 +42,13 @@ class BusRouteViewSet(CityScopeMixin, viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["transport"])
-class BusViewSet(CityScopeMixin, viewsets.ModelViewSet):
+class BusViewSet(viewsets.ModelViewSet):
     serializer_class = BusSerializer
     permission_classes = [IsAuthenticated]
     city_lookup_field = "route__city"
 
     def get_queryset(self):
-        return super().get_queryset().filter(is_active=True).select_related("route__city")
+        return Bus.objects.filter(is_active=True).select_related("route__city")
 
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
