@@ -45,12 +45,19 @@ class Command(BaseCommand):
             self.city = City.objects.first()
             self.ward = Ward.objects.filter(city=self.city).first()
             self.water_dept = Department.objects.get(code=Department.WATER)
+            
+            # Ensure citizen has a city
+            if hasattr(self.citizen, 'profile'):
+                self.citizen.profile.city_ref = self.city
+                self.citizen.profile.save()
         except Exception as e:
             self.stdout.write(self.style.ERROR(f"Failed to find test data: {e}"))
             return
 
         # Execute tests
         self.test_main_communication_flow()
+        self.test_notice_communication_flow()
+        self.test_electricity_communication_flow()
         self.test_department_isolation()
         self.test_authorization()
 
@@ -70,6 +77,7 @@ class Command(BaseCommand):
             "category": "WATER_SUPPLY",
             "title": "Water supply is unavailable",
             "description": "No water since morning",
+            "ward_id": self.ward.id
         }
         res = self.client.post("/api/complaints/", payload, format="json")
         if res.status_code == 201:
@@ -162,6 +170,100 @@ class Command(BaseCommand):
             self.log_result(module, "SYSTEM", "Notification Trigger", "Citizen notified", "Citizen notified", "PASS")
         else:
             self.log_result(module, "SYSTEM", "Notification Trigger", "Citizen notified", "No notification", "FAIL")
+
+    def test_notice_communication_flow(self):
+        module = "Water Notices"
+        from django.utils import timezone
+        now = timezone.now()
+
+        # TEST 1: Officer Creates Notice
+        self.as_user(self.water_officer)
+        payload = {
+            "city": self.city.id,
+            "ward": self.ward.id,
+            "notice_type": "PLANNED_CUT",
+            "title": "Main Pipeline Maintenance",
+            "description": "Routine check",
+            "start_time": now.isoformat(),
+            "status": "UPCOMING"
+        }
+        res = self.client.post("/api/water/notices/", payload, format="json")
+        if res.status_code == 201:
+            notice_id = res.data["id"]
+            self.log_result(module, "OFFICER", "Create Notice", "201 Created", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "OFFICER", "Create Notice", "201 Created", f"{res.status_code}", "FAIL")
+            return
+
+        # Citizen Views Notice
+        self.as_user(self.citizen)
+        res = self.client.get("/api/water/notices/")
+        found = any(n["id"] == notice_id for n in res.data["results"])
+        if found:
+            self.log_result(module, "CITIZEN", "View Notice", "Visible", "Visible", "PASS")
+        else:
+            self.log_result(module, "CITIZEN", "View Notice", "Visible", "Hidden", "FAIL")
+
+        # TEST 2: Officer Edits Notice
+        self.as_user(self.water_officer)
+        res = self.client.patch(f"/api/water/notices/{notice_id}/", {"status": "IN_PROGRESS"}, format="json")
+        if res.status_code == 200:
+            self.log_result(module, "OFFICER", "Edit Notice", "200 OK", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "OFFICER", "Edit Notice", "200 OK", f"{res.status_code}", "FAIL")
+
+        # Citizen sees Edit
+        self.as_user(self.citizen)
+        res = self.client.get(f"/api/water/notices/{notice_id}/")
+        if res.status_code == 200 and res.data["status"] == "IN_PROGRESS":
+            self.log_result(module, "CITIZEN", "See Notice Edit", "IN_PROGRESS", res.data["status"], "PASS")
+        else:
+            self.log_result(module, "CITIZEN", "See Notice Edit", "IN_PROGRESS", getattr(res, "data", {}).get("status", "FAIL"), "FAIL")
+
+    def test_electricity_communication_flow(self):
+        module = "Electricity Workflow"
+        elec_officer = CustomUser.objects.get(email="electricity.officer@cityos.gov")
+        elec_worker = CustomUser.objects.get(email="electricity.worker@cityos.gov")
+        
+        # CITIZEN Creates
+        self.as_user(self.citizen)
+        payload = {
+            "category": "ELECTRICITY",
+            "title": "Power out in Sector 9",
+            "description": "No power since evening",
+            "ward_id": self.ward.id
+        }
+        res = self.client.post("/api/complaints/", payload, format="json")
+        if res.status_code == 201:
+            complaint_id = Complaint.objects.filter(citizen=self.citizen).latest('created_at').id
+            self.log_result(module, "CITIZEN", "Create Complaint", "201 Created", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "CITIZEN", "Create Complaint", "201 Created", f"{res.status_code}", "FAIL")
+            return
+
+        # OFFICER Assigns
+        self.as_user(elec_officer)
+        res = self.client.post(f"/api/complaints/{complaint_id}/assign/", {"worker_id": elec_worker.id, "assigned_to_id": elec_worker.id}, format="json")
+        if res.status_code == 200:
+            self.log_result(module, "OFFICER", "Assign Worker", "200 OK", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "OFFICER", "Assign Worker", "200 OK", f"{res.status_code}", "FAIL")
+
+        # WORKER Accepts & Completes
+        self.as_user(elec_worker)
+        res = self.client.post(f"/api/complaints/worker/tasks/{complaint_id}/accept/")
+        if res.status_code == 200:
+            self.log_result(module, "WORKER", "Accept Task", "200 OK", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "WORKER", "Accept Task", "200 OK", f"{res.status_code}", "FAIL")
+            
+        self.client.post(f"/api/complaints/worker/tasks/{complaint_id}/start-travel/")
+        self.client.post(f"/api/complaints/worker/tasks/{complaint_id}/start-work/")
+        res = self.client.post(f"/api/complaints/worker/tasks/{complaint_id}/complete/", {"remarks": "Fixed it"}, format="json")
+        if res.status_code == 200:
+            self.log_result(module, "WORKER", "Complete Task", "200 OK", f"{res.status_code}", "PASS")
+        else:
+            self.log_result(module, "WORKER", "Complete Task", "200 OK", f"{res.status_code}", "FAIL")
 
     def test_department_isolation(self):
         module = "Department Isolation"

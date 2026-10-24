@@ -6,6 +6,10 @@ __pycache__/
 local_settings.py
 db.sqlite3
 cityos_dev.sqlite3
+*.sqlite3
+audit_results.json
+fix_*.py
+update_seed.py
 media/
 .env
 

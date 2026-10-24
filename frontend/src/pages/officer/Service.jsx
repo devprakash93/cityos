@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import GenericServicePage from '../admin/GenericServicePage';
 import ElectricityManager from './ElectricityManager';
+import WaterSupplyManager from './WaterSupplyManager';
 import { Activity, Trash2, Droplets, Zap, Bus, Wind, Car } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
 
@@ -38,6 +39,14 @@ export default function OfficerService() {
     return (
       <div className="max-w-7xl mx-auto">
         <ElectricityManager />
+      </div>
+    );
+  }
+
+  if (deptCode === 'WATER') {
+    return (
+      <div className="max-w-7xl mx-auto">
+        <WaterSupplyManager />
       </div>
     );
   }

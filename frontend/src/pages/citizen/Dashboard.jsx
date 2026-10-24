@@ -6,8 +6,12 @@ import {
   AlertTriangle, FileText, LayoutGrid,
   Wind, TrafficCone, Droplets, Zap,
   ShieldAlert, Bell, ChevronRight,
-  TrendingUp, CheckCircle2, Clock, Plus
+  TrendingUp, CheckCircle2, Clock, Plus,
+  Megaphone, Sparkles, ArrowRight
 } from 'lucide-react';
+import FeaturedAnnouncementCarousel from '../../components/announcements/FeaturedAnnouncementCarousel';
+import AnnouncementCard from '../../components/announcements/AnnouncementCard';
+import AnnouncementDetails from '../../components/announcements/AnnouncementDetails';
 
 /* ─── Helper: get AQI label & color ─── */
 function aqiInfo(val) {
@@ -91,13 +95,21 @@ export default function CitizenDashboard() {
   const [stats, setStats] = useState({ total: 0, active: 0, resolved: 0 });
   const [loading, setLoading] = useState(true);
 
+  // Official Announcements & Featured Campaigns state
+  const [featuredAnnouncements, setFeaturedAnnouncements] = useState([]);
+  const [recentUpdates, setRecentUpdates] = useState([]);
+  const [announcementsLoading, setAnnouncementsLoading] = useState(true);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
   useEffect(() => {
     const load = async () => {
       try {
-        const [cmpRes, notifRes, aqiRes] = await Promise.allSettled([
+        const [cmpRes, notifRes, aqiRes, featRes, updatesRes] = await Promise.allSettled([
           api.get('/complaints/'),
           api.get('/notifications/'),
           api.get('/pollution/stations/city-aqi/'),
+          api.get('/announcements/featured/'),
+          api.get('/announcements/'),
         ]);
 
         if (cmpRes.status === 'fulfilled') {
@@ -119,8 +131,22 @@ export default function CitizenDashboard() {
             setAqi(data[0]?.latest_reading?.aqi_value ?? null);
           }
         }
+        if (featRes.status === 'fulfilled') {
+          const data = featRes.value.data?.results || featRes.value.data || [];
+          setFeaturedAnnouncements(data);
+        }
+        if (updatesRes.status === 'fulfilled') {
+          const data = updatesRes.value.data?.results || updatesRes.value.data || [];
+          // Exclude items already in featured to avoid duplicate cards on homepage
+          const featIds = new Set((featRes.status === 'fulfilled' ? (featRes.value.data?.results || featRes.value.data || []) : []).map(f => f.id));
+          const nonFeatured = data.filter(a => !featIds.has(a.id));
+          setRecentUpdates(nonFeatured.slice(0, 4));
+        }
       } catch {}
-      finally { setLoading(false); }
+      finally {
+        setLoading(false);
+        setAnnouncementsLoading(false);
+      }
     };
     load();
   }, []);
@@ -220,6 +246,62 @@ export default function CitizenDashboard() {
         </div>
       </div>
 
+      {/* ── SECTION: OFFICIAL CIVIC SPOTLIGHT & PROMOTIONS ── */}
+      <section className="space-y-4" aria-label="Official Announcements and Featured Campaigns">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+            </div>
+            <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
+              Official Civic Spotlight
+            </h2>
+          </div>
+          <Link
+            to="/citizen/announcements"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-800 hover:underline"
+          >
+            <span>All Updates</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Featured Banner Carousel */}
+        <FeaturedAnnouncementCarousel
+          announcements={featuredAnnouncements}
+          loading={announcementsLoading}
+          onOpenDetails={(ann) => setSelectedAnnouncement(ann)}
+        />
+
+        {/* More City Updates Compact Cards */}
+        {recentUpdates.length > 0 && (
+          <div className="pt-1 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                <Megaphone className="w-3.5 h-3.5 text-blue-600" />
+                More City Updates
+              </h3>
+              <Link
+                to="/citizen/announcements"
+                className="text-xs font-semibold text-blue-600 hover:underline"
+              >
+                View All →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {recentUpdates.map((item) => (
+                <AnnouncementCard
+                  key={item.id}
+                  announcement={item}
+                  onOpenDetails={(ann) => setSelectedAnnouncement(ann)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+
       {/* ── SECTION 2: CITY SNAPSHOT (horizontal scroll) ── */}
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -313,6 +395,13 @@ export default function CitizenDashboard() {
           <ChevronRight className="w-5 h-5 text-white/60" />
         </div>
       </Link>
+
+      {/* Announcement Details Modal */}
+      <AnnouncementDetails
+        isOpen={Boolean(selectedAnnouncement)}
+        announcement={selectedAnnouncement}
+        onClose={() => setSelectedAnnouncement(null)}
+      />
 
     </div>
   );

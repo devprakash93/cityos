@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import {
   ArrowLeft, MapPin, User, Paperclip, CheckCircle, XCircle,
@@ -36,6 +37,10 @@ const TIMELINE_ICONS = {
 export default function OfficerComplaintDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = user?.role?.name === 'SUPER_ADMIN' || window.location.pathname.startsWith('/admin');
+  const complaintsBasePath = isAdmin ? '/admin/complaints' : '/officer/complaints';
+
   const [complaint, setComplaint] = useState(null);
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,22 +53,35 @@ export default function OfficerComplaintDetail() {
   const [newPriority, setNewPriority] = useState('');
 
   const fetchData = useCallback(async () => {
+    if (!id || id === 'undefined') {
+      alert('Invalid complaint ID specified.');
+      navigate(complaintsBasePath);
+      return;
+    }
     setLoading(true);
     try {
-      const [compRes, workRes] = await Promise.all([
-        api.get(`/complaints/${id}/`),
-        api.get('/accounts/officer-workers/'),
-      ]);
+      const compRes = await api.get(`/complaints/${id}/`);
       setComplaint(compRes.data);
-      setWorkers(workRes.data.results || workRes.data || []);
+
+      // Fetch workers corresponding to the complaint's department
+      try {
+        const deptId = compRes.data.department?.id;
+        const workRes = await api.get('/accounts/officer-workers/', {
+          params: deptId ? { department_id: deptId } : {}
+        });
+        setWorkers(workRes.data.results || workRes.data || []);
+      } catch (workErr) {
+        console.warn('Could not load department workers list:', workErr);
+        setWorkers([]);
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to load complaint details');
-      navigate('/officer/complaints');
+      navigate(complaintsBasePath);
     } finally {
       setLoading(false);
     }
-  }, [id, navigate]);
+  }, [id, navigate, complaintsBasePath]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 

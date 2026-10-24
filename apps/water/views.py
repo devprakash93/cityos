@@ -71,19 +71,18 @@ class WaterScheduleViewSet(viewsets.ReadOnlyModelViewSet):
         return qs
 
 
-@extend_schema(tags=["water"])
-class WaterNoticeViewSet(viewsets.ReadOnlyModelViewSet):
+class WaterNoticeViewSet(CityScopeMixin, viewsets.ModelViewSet):
     """Planned/emergency interruptions."""
+    queryset = WaterNotice.objects.all()
     serializer_class = WaterNoticeSerializer
     permission_classes = [IsAuthenticated]
     filterset_fields = ["city", "ward", "status", "notice_type"]
+    city_lookup_field = "city"
 
     def get_queryset(self):
-        qs = WaterNotice.objects.select_related("city", "ward")
-        city_id = self.request.query_params.get("city")
-        ward_id = self.request.query_params.get("ward")
-        if city_id:
-            qs = qs.filter(city_id=city_id)
-        if ward_id:
-            qs = qs.filter(ward_id=ward_id)
-        return qs
+        return super().get_queryset().select_related("city", "ward").order_by("-start_time")
+        
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsOfficerOrAdmin()]
+        return [IsAuthenticated()]

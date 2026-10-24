@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
-import { Users, Mail, MapPin, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
+import { Users, Mail, MapPin, RefreshCw, CheckCircle2, XCircle, Info, ArrowRight } from 'lucide-react';
 
 export default function OfficerWorkers() {
   const { user } = useAuth();
@@ -49,6 +50,25 @@ export default function OfficerWorkers() {
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           </button>
         </div>
+      </div>
+
+      {/* Role & Assignment Context Banner */}
+      <div className="bg-blue-50/70 border border-blue-200/80 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-slate-700">
+        <div className="flex items-start gap-3">
+          <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-semibold text-slate-900">Task Assignment & Staff Roster: </span>
+            <span>
+              Field worker roles are provisioned by the Administrator. As an Officer, you can assign complaint tasks, set deadlines, and dispatch work orders to any available worker listed below.
+            </span>
+          </div>
+        </div>
+        <Link
+          to="/officer/complaints"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shrink-0 transition-colors shadow-sm"
+        >
+          Assign In Complaints <ArrowRight className="w-3.5 h-3.5" />
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

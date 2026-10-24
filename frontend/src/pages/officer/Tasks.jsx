@@ -98,9 +98,13 @@ export default function OfficerTasks() {
                </div>
                
                <div className="border-t border-slate-100 bg-slate-50 p-3 flex justify-between items-center mt-auto">
-                 <Link to={`/officer/complaints/${t.complaint?.id}`} className="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
-                   <Eye className="w-4 h-4" /> View Details
-                 </Link>
+                 {t.complaint?.id ? (
+                   <Link to={`/officer/complaints/${t.complaint.id}`} className="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors">
+                     <Eye className="w-4 h-4" /> View Details
+                   </Link>
+                 ) : (
+                   <span className="text-xs text-slate-400">No complaint linked</span>
+                 )}
                </div>
             </div>
           ))

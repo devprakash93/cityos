@@ -138,3 +138,48 @@ class NotificationService:
                 category="EMERGENCY",
                 related_object=related_object,
             )
+
+    @staticmethod
+    def notify_announcement_publication(announcement) -> int:
+        """
+        Dispatches in-app notifications to eligible citizens when an announcement is published.
+        Avoids duplicate notifications for the same announcement.
+        """
+        if announcement.status != "PUBLISHED":
+            return 0
+
+        content_type = ContentType.objects.get_for_model(announcement)
+        existing_recipients = set(
+            Notification.objects.filter(
+                content_type=content_type,
+                object_id=announcement.pk,
+            ).values_list("recipient_id", flat=True)
+        )
+
+        users_qs = CustomUser.objects.filter(is_active=True, role__name=Role.CITIZEN)
+
+        # Geographic targeting filter
+        if announcement.audience_scope == "WARD" and announcement.target_ward_id:
+            users_qs = users_qs.filter(profile__ward_ref_id=announcement.target_ward_id)
+        elif announcement.audience_scope == "CITY" and announcement.target_city_id:
+            users_qs = users_qs.filter(profile__city_ref_id=announcement.target_city_id)
+        elif announcement.audience_scope == "DISTRICT" and announcement.target_district_id:
+            users_qs = users_qs.filter(profile__district_ref_id=announcement.target_district_id)
+
+        category = "EMERGENCY" if (announcement.priority == "EMERGENCY" or announcement.category == "EMERGENCY_ALERT") else "SYSTEM"
+        title = f"📢 {announcement.title}" if category != "EMERGENCY" else f"🚨 EMERGENCY: {announcement.title}"
+        message = announcement.summary or announcement.message or announcement.title
+
+        created_count = 0
+        for user in users_qs[:200]:  # Cap notification broadcast to reasonable batch
+            if user.id not in existing_recipients:
+                Notification.objects.create(
+                    recipient=user,
+                    title=title,
+                    message=message[:200],
+                    category=category,
+                    content_type=content_type,
+                    object_id=announcement.pk,
+                )
+                created_count += 1
+        return created_count

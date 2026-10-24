@@ -16,6 +16,7 @@ from drf_spectacular.utils import extend_schema
 from core.permissions import (
     IsCitizen, IsOfficer, IsFieldWorker, IsSuperAdmin,
     IsFieldWorkerOrOfficer, IsOwnerOrAdmin, IsSameDepartmentOfficer,
+    IsOfficerOrAdmin,
 )
 from core.mixins import RoleFilterMixin
 from apps.accounts.models import Role
@@ -157,7 +158,7 @@ class ComplaintViewSet(RoleFilterMixin, viewsets.ModelViewSet):
 
     @extend_schema(request=AssignComplaintSerializer, tags=["complaints"])
     @action(detail=True, methods=["post"], url_path="assign",
-            permission_classes=[IsAuthenticated, IsOfficer])
+            permission_classes=[IsAuthenticated, IsOfficerOrAdmin])
     def assign(self, request, pk=None):
         """POST /api/complaints/{id}/assign/"""
         complaint = self.get_object()
@@ -218,7 +219,7 @@ class ComplaintViewSet(RoleFilterMixin, viewsets.ModelViewSet):
 
     @extend_schema(tags=["complaints"])
     @action(detail=True, methods=["post"], url_path="resolve",
-            permission_classes=[IsAuthenticated, IsOfficer])
+            permission_classes=[IsAuthenticated, IsOfficerOrAdmin])
     def resolve(self, request, pk=None):
         """POST /api/complaints/{id}/resolve/ — officer resolves after reviewing worker completion."""
         complaint = self.get_object()
@@ -242,7 +243,7 @@ class ComplaintViewSet(RoleFilterMixin, viewsets.ModelViewSet):
 
     @extend_schema(tags=["complaints"])
     @action(detail=True, methods=["post"], url_path="reject",
-            permission_classes=[IsAuthenticated, IsOfficer])
+            permission_classes=[IsAuthenticated, IsOfficerOrAdmin])
     def reject(self, request, pk=None):
         """POST /api/complaints/{id}/reject/ — officer rejects a complaint."""
         complaint = self.get_object()
@@ -266,7 +267,7 @@ class ComplaintViewSet(RoleFilterMixin, viewsets.ModelViewSet):
 
     @extend_schema(tags=["complaints"])
     @action(detail=True, methods=["patch"], url_path="priority",
-            permission_classes=[IsAuthenticated, IsOfficer])
+            permission_classes=[IsAuthenticated, IsOfficerOrAdmin])
     def change_priority(self, request, pk=None):
         """PATCH /api/complaints/{id}/priority/ — officer changes priority."""
         complaint = self.get_object()

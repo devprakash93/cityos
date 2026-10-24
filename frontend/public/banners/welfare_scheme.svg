@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="40%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34d399" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Decorative background circles -->
+  <circle cx="1050" cy="180" r="260" fill="url(#glow)"/>
+  <circle cx="150" cy="550" r="180" fill="#10b981" fill-opacity="0.08"/>
+  <!-- Subtle civic grid -->
+  <path d="M0,450 Q300,380 600,430 T1200,400 L1200,630 L0,630 Z" fill="#022c22" fill-opacity="0.6"/>
+  <path d="M0,490 Q300,440 600,480 T1200,450 L1200,630 L0,630 Z" fill="#0f172a" fill-opacity="0.7"/>
+  <!-- Healthcare / Welfare Emblem -->
+  <g transform="translate(900, 220)">
+    <rect x="-70" y="-70" width="140" height="140" rx="36" fill="#10b981" fill-opacity="0.25" stroke="#34d399" stroke-width="3"/>
+    <!-- Medical Cross with Heart Shield -->
+    <path d="M-14,-45 L14,-45 L14,-14 L45,-14 L45,14 L14,14 L14,45 L-14,45 L-14,14 L-45,14 L-45,-14 L-14,-14 Z" fill="#ecfdf5"/>
+    <circle cx="0" cy="0" r="10" fill="#059669"/>
+  </g>
+  <!-- Official Seal Header Mock -->
+  <g transform="translate(80, 80)">
+    <rect width="210" height="38" rx="19" fill="#065f46" stroke="#34d399" stroke-width="1.5"/>
+    <circle cx="20" cy="19" r="6" fill="#34d399"/>
+    <text x="36" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ecfdf5" letter-spacing="1.5">GOVT. OF ODISHA</text>
+  </g>
+  <text x="80" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Biju Swasthya Kalyan Yojana</text>
+  <text x="80" y="275" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="600" fill="#6ee7b7">Smart Health Card Universal Benefits 2026</text>
+  <text x="80" y="340" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#e2e8f0" opacity="0.9">Over 4,500 empaneled hospitals across Odisha and nationwide.</text>
+  <text x="80" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#e2e8f0" opacity="0.9">Check citizen eligibility and cashless treatment coverage.</text>
+</svg>

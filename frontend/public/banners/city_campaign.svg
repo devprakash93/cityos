@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg_camp" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="50%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="glow_camp" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0d9488" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg_camp)"/>
+  <circle cx="1020" cy="180" r="280" fill="url(#glow_camp)"/>
+  <!-- Skyline and green hills silhouette -->
+  <path d="M0,480 Q250,420 500,460 T1000,430 L1200,460 L1200,630 L0,630 Z" fill="#042f2e" fill-opacity="0.7"/>
+  <path d="M0,520 Q300,470 650,510 T1200,490 L1200,630 L0,630 Z" fill="#021a19" fill-opacity="0.8"/>
+  <!-- Leaf and tree badge icon -->
+  <g transform="translate(920, 220)">
+    <rect x="-65" y="-65" width="130" height="130" rx="32" fill="#14b8a6" fill-opacity="0.25" stroke="#2dd4bf" stroke-width="3"/>
+    <path d="M0,-35 C25,-35 40,-10 40,25 C40,40 25,40 0,40 C-25,40 -40,40 -40,25 C-40,-10 -25,-35 0,-35 Z" fill="#ccfbf1"/>
+    <line x1="0" y1="-25" x2="0" y2="35" stroke="#0f766e" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g transform="translate(80, 80)">
+    <rect width="260" height="38" rx="19" fill="#115e59" stroke="#2dd4bf" stroke-width="1.5"/>
+    <circle cx="20" cy="19" r="6" fill="#2dd4bf"/>
+    <text x="36" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#ccfbf1" letter-spacing="1.5">MUNICIPAL CAMPAIGN</text>
+  </g>
+  <text x="80" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Ama Sahar, Swachha Sahar</text>
+  <text x="80" y="275" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="600" fill="#5eead4">Clean &amp; Green Ward Mission 2026</text>
+  <text x="80" y="340" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#e2e8f0" opacity="0.9">Segregated door-to-door collection &amp; ward tree plantation drive.</text>
+  <text x="80" y="372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#e2e8f0" opacity="0.9">Volunteers receive citizen recognition certificates.</text>
+</svg>

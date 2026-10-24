@@ -87,21 +87,32 @@ class ActivityLogListView(generics.ListAPIView):
 class OfficerWorkerListView(generics.ListAPIView):
     """
     List all FIELD_WORKERs belonging to the authenticated officer's department and city.
-    Accessible only to IsOfficer.
+    Accessible to IsOfficer and IsSuperAdmin.
     """
     serializer_class = AdminUserListSerializer
-    permission_classes = [permissions.IsAuthenticated, permissions.BasePermission] # Will use IsOfficer
-    
+    permission_classes = [permissions.IsAuthenticated]
+
     def get_permissions(self):
-        from core.permissions import IsOfficer
-        return [permissions.IsAuthenticated(), IsOfficer()]
+        from core.permissions import IsOfficerOrAdmin
+        return [permissions.IsAuthenticated(), IsOfficerOrAdmin()]
 
     def get_queryset(self):
         user = self.request.user
         qs = CustomUser.objects.filter(
-            role__name=Role.FIELD_WORKER,
-            department=user.department
+            role__name=Role.FIELD_WORKER
         ).select_related("role", "department", "profile")
+
+        dept_id = self.request.query_params.get("department_id") or self.request.query_params.get("department")
+
+        if getattr(user.role, "name", None) == Role.SUPER_ADMIN or user.is_superuser:
+            if dept_id:
+                qs = qs.filter(department_id=dept_id)
+            return qs.order_by("first_name", "last_name")
+
+        if user.department:
+            qs = qs.filter(department=user.department)
+        elif dept_id:
+            qs = qs.filter(department_id=dept_id)
 
         return qs.order_by("first_name", "last_name")
 

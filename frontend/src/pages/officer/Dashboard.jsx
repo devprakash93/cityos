@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../api/axios';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
@@ -7,6 +8,7 @@ import { Button } from '../../components/ui/Button';
 import { FileText, ShieldAlert, Users, Clock, CheckCircle, Activity, LayoutDashboard, Map, BoxSelect } from 'lucide-react';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -156,8 +158,12 @@ export default function Dashboard() {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {recent_complaints.map((c) => (
-                        <tr key={c.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-3 font-medium text-slate-900">#{c.reference_number}</td>
+                        <tr
+                          key={c.id}
+                          onClick={() => c.id && navigate(`/officer/complaints/${c.id}`)}
+                          className="hover:bg-blue-50/60 cursor-pointer transition-colors group"
+                        >
+                          <td className="px-4 py-3 font-medium text-slate-900 group-hover:text-blue-600 transition-colors">#{c.reference_number}</td>
                           <td className="px-4 py-3 truncate max-w-[200px]" title={c.title}>{c.title}</td>
                           <td className="px-4 py-3"><StatusBadge status={c.status} /></td>
                           <td className="px-4 py-3 text-slate-500">

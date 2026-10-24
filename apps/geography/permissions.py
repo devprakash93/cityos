@@ -112,5 +112,5 @@ def get_city_for_user(user):
     # For Citizens: city is on the user's profile
     profile = getattr(user, 'profile', None)
     if profile:
-        return getattr(profile, 'city', None)
+        return getattr(profile, 'city_ref', None)
     return None

@@ -107,6 +107,7 @@ function App() {
                 <Route path="/citizen/pollution" element={<Pollution />} />
                 <Route path="/citizen/emergency" element={<Emergency />} />
                 <Route path="/citizen/announcements" element={<Announcements />} />
+                <Route path="/citizen/announcements/:slug" element={<Announcements />} />
                 <Route path="/citizen/notifications" element={<Notifications />} />
                 <Route path="/citizen/statistics" element={<Statistics />} />
                 <Route path="/citizen/settings" element={<CitizenSettings />} />

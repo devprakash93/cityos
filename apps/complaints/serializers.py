@@ -31,15 +31,6 @@ class ComplaintHistorySerializer(serializers.ModelSerializer):
         fields = ["id", "event_type", "old_value", "new_value", "remarks", "changed_by", "timestamp"]
 
 
-class ComplaintAssignmentSerializer(serializers.ModelSerializer):
-    assigned_to = UserSummarySerializer(read_only=True)
-    assigned_by = UserSummarySerializer(read_only=True)
-
-    class Meta:
-        model = ComplaintAssignment
-        fields = ["id", "assigned_to", "assigned_by", "deadline", "remarks", "assigned_at", "is_active"]
-
-
 class ComplaintListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for list views."""
     citizen_name = serializers.CharField(source="citizen.full_name", read_only=True)
@@ -54,6 +45,16 @@ class ComplaintListSerializer(serializers.ModelSerializer):
             "priority", "priority_display", "citizen_name", "department_name",
             "address", "created_at", "updated_at",
         ]
+
+
+class ComplaintAssignmentSerializer(serializers.ModelSerializer):
+    complaint = ComplaintListSerializer(read_only=True)
+    assigned_to = UserSummarySerializer(read_only=True)
+    assigned_by = UserSummarySerializer(read_only=True)
+
+    class Meta:
+        model = ComplaintAssignment
+        fields = ["id", "complaint", "assigned_to", "assigned_by", "deadline", "remarks", "assigned_at", "is_active"]
 
 
 class ComplaintDetailSerializer(serializers.ModelSerializer):
@@ -93,12 +94,19 @@ class ComplaintCreateSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
 
+    ward_id = serializers.PrimaryKeyRelatedField(
+        queryset=__import__("apps.geography.models", fromlist=["Ward"]).Ward.objects.all(),
+        source="ward",
+        required=False,
+        allow_null=True,
+    )
+
     class Meta:
         model = Complaint
         fields = [
             "title", "category", "description",
             "location_lat", "location_lng", "address",
-            "priority", "department_id",
+            "priority", "department_id", "ward_id",
         ]
 
     def validate(self, attrs):

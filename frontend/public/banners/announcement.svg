@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg_ann" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg_ann)"/>
+  <circle cx="1020" cy="180" r="280" fill="#60a5fa" fill-opacity="0.2"/>
+  <g transform="translate(920, 220)">
+    <rect x="-65" y="-65" width="130" height="130" rx="32" fill="#3b82f6" fill-opacity="0.3" stroke="#93c5fd" stroke-width="3"/>
+    <path d="M-30,-15 L-5,-15 L20,-35 L20,35 L-5,15 L-30,15 Z" fill="#dbeafe"/>
+    <path d="M28,-12 C35,-5 35,5 28,12" stroke="#dbeafe" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M36,-20 C48,-8 48,8 36,20" stroke="#93c5fd" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </g>
+  <g transform="translate(80, 80)">
+    <rect width="250" height="38" rx="19" fill="#1e40af" stroke="#93c5fd" stroke-width="1.5"/>
+    <circle cx="20" cy="19" r="6" fill="#93c5fd"/>
+    <text x="36" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#dbeafe" letter-spacing="1.5">OFFICIAL NOTICE</text>
+  </g>
+  <text x="80" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="48" font-weight="800" fill="#ffffff" letter-spacing="-0.5">Municipal Corporation Notice</text>
+  <text x="80" y="275" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="600" fill="#93c5fd">Public Service &amp; Governance Updates</text>
+  <text x="80" y="340" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="400" fill="#e2e8f0" opacity="0.9">Official directives and administrative guidelines for citizens.</text>
+</svg>

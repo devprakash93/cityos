@@ -37,6 +37,8 @@ urlpatterns = [
     path("api/emergency/", include("apps.emergency.urls")),
     path("api/pollution/", include("apps.pollution.urls")),
     path("api/notifications/", include("apps.notifications.urls")),
+    path("api/announcements/", include("apps.notifications.public_urls")),
+    path("api/admin/announcements/", include("apps.notifications.admin_urls")),
     path("api/simulator/", include("apps.iot_simulator.urls")),
     path("api/analytics/", include("apps.analytics.urls")),
 ]

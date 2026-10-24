@@ -2,6 +2,10 @@
 conftest.py — pytest-django configuration and shared fixtures.
 """
 import pytest
+import django.test.testcases
+if not hasattr(django.test.testcases.TestCase, "_pre_setup_ran_eagerly"):
+    django.test.testcases.TestCase._pre_setup_ran_eagerly = False
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
