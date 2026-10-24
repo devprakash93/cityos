@@ -97,7 +97,19 @@ class CityScopeMixin:
     city_lookup_field = "zone__city"
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        # Safely resolve the base queryset even if `queryset` attribute was omitted
+        if getattr(self, "queryset", None) is not None:
+            qs = self.queryset.all()
+        else:
+            try:
+                qs = super().get_queryset()
+            except AssertionError:
+                serializer_cls = getattr(self, "serializer_class", None)
+                if serializer_cls and hasattr(serializer_cls, "Meta") and hasattr(serializer_cls.Meta, "model"):
+                    qs = serializer_cls.Meta.model.objects.all()
+                else:
+                    raise
+
         from apps.geography.permissions import get_city_for_user
         from apps.accounts.models import Role
         
