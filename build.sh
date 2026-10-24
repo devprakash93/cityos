@@ -10,3 +10,7 @@ python manage.py collectstatic --no-input
 
 # Run database migrations
 python manage.py migrate
+
+# Seed initial baseline data and civic announcements (idempotent)
+python manage.py seed_cityos || true
+python manage.py seed_promotions || true
