@@ -62,7 +62,7 @@ class AQIStationViewSet(CityScopeMixin, viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["pollution"])
-class PollutionAlertViewSet(CityScopeMixin, viewsets.ReadOnlyModelViewSet):
+class PollutionAlertViewSet(CityScopeMixin, viewsets.ModelViewSet):
     serializer_class = PollutionAlertSerializer
     permission_classes = [IsAuthenticated]
     filterset_fields = ["status", "category"]
@@ -70,3 +70,8 @@ class PollutionAlertViewSet(CityScopeMixin, viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().select_related("station__location__city").order_by("-triggered_at")
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsOfficerOrAdmin()]
+        return [IsAuthenticated()]

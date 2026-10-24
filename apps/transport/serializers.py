@@ -21,6 +21,8 @@ class BusStopSerializer(serializers.ModelSerializer):
 
 class BusSerializer(serializers.ModelSerializer):
     bus_number = serializers.CharField(source="registration_number", read_only=True)
+    route_number = serializers.CharField(source="route.route_number", read_only=True)
+    route_name = serializers.CharField(source="route.name", read_only=True)
     status = serializers.SerializerMethodField()
     current_stop = serializers.SerializerMethodField()
     next_stop = serializers.SerializerMethodField()

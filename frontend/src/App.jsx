@@ -68,9 +68,12 @@ import ComplaintsAdmin from './pages/admin/ComplaintsAdmin';
 import EmergencyControl from './pages/admin/EmergencyControl';
 import DisasterManagement from './pages/admin/DisasterManagement';
 import SystemHealth from './pages/admin/SystemHealth';
-import TrafficMonitor from './pages/admin/TrafficMonitor';
-import GenericServicePage from './pages/admin/GenericServicePage';
-import { Trash2, Droplets, Zap, Bus, Wind } from 'lucide-react';
+import TrafficManagement from './pages/admin/TrafficManagement';
+import AdminWasteManagement from './pages/admin/WasteManagement';
+import AdminWaterManagement from './pages/admin/WaterManagement';
+import AdminElectricityManagement from './pages/admin/ElectricityManagement';
+import AdminTransportManagement from './pages/admin/TransportManagement';
+import AdminPollutionManagement from './pages/admin/PollutionManagement';
 
 // Shared Pages
 import Notifications from './pages/shared/Notifications';
@@ -160,12 +163,12 @@ function App() {
                 <Route path="/admin/disaster" element={<DisasterManagement />} />
 
                 {/* City Services */}
-                <Route path="/admin/traffic" element={<TrafficMonitor />} />
-                <Route path="/admin/waste" element={<GenericServicePage title="Waste Management" icon={Trash2} endpoint="/waste/bins/" color="bg-stone-500" />} />
-                <Route path="/admin/water" element={<GenericServicePage title="Water Supply" icon={Droplets} endpoint="/water/readings/" color="bg-blue-500" />} />
-                <Route path="/admin/electricity" element={<GenericServicePage title="Electricity" icon={Zap} endpoint="/electricity/readings/" color="bg-yellow-500" />} />
-                <Route path="/admin/transport" element={<GenericServicePage title="Public Transport" icon={Bus} endpoint="/transport/buses/" color="bg-indigo-500" />} />
-                <Route path="/admin/pollution" element={<GenericServicePage title="Pollution & AQI" icon={Wind} endpoint="/pollution/readings/" color="bg-teal-500" />} />
+                <Route path="/admin/traffic" element={<TrafficManagement />} />
+                <Route path="/admin/waste" element={<AdminWasteManagement />} />
+                <Route path="/admin/water" element={<AdminWaterManagement />} />
+                <Route path="/admin/electricity" element={<AdminElectricityManagement />} />
+                <Route path="/admin/transport" element={<AdminTransportManagement />} />
+                <Route path="/admin/pollution" element={<AdminPollutionManagement />} />
 
                 {/* Administration */}
                 <Route path="/admin/users" element={<UsersManagement />} />

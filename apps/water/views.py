@@ -43,7 +43,7 @@ class WaterSourceViewSet(CityScopeMixin, viewsets.ModelViewSet):
 
 
 @extend_schema(tags=["water"])
-class WaterAlertViewSet(CityScopeMixin, viewsets.ReadOnlyModelViewSet):
+class WaterAlertViewSet(CityScopeMixin, viewsets.ModelViewSet):
     serializer_class = WaterAlertSerializer
     permission_classes = [IsAuthenticated, IsOfficerOrAdmin]
     filterset_fields = ["status", "alert_type"]
@@ -51,6 +51,11 @@ class WaterAlertViewSet(CityScopeMixin, viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().select_related("source__location__city").order_by("-triggered_at")
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAuthenticated(), IsOfficerOrAdmin()]
+        return [IsAuthenticated()]
 
 
 @extend_schema(tags=["water"])
