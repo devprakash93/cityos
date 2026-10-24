@@ -41,6 +41,7 @@ CORS_ALLOWED_ORIGINS = env.list(  # noqa: F405
 )
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/.*\.pages\.dev$",
+    r"^https:\/\/.*\.workers\.dev$",
     r"^https:\/\/.*\.onrender\.com$",
 ]
 
@@ -48,6 +49,7 @@ CSRF_TRUSTED_ORIGINS = env.list(  # noqa: F405
     "CSRF_TRUSTED_ORIGINS",
     default=[
         "https://*.pages.dev",
+        "https://*.workers.dev",
         "https://*.onrender.com",
         "http://localhost:5173",
         "http://localhost:3000",
