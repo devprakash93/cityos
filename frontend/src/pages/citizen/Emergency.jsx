@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { CityMap } from '../../components/maps/CityMap';
 import {
@@ -23,6 +24,7 @@ import {
   X,
   ShieldCheck,
   AlertTriangle,
+  ExternalLink,
 } from 'lucide-react';
 
 const CONTACTS = [
@@ -435,6 +437,16 @@ export default function Emergency() {
             <p className="text-xs text-slate-300 mt-1 max-w-xl">
               Authenticate with the predefined Emergency Controller credentials to unlock dispatch monitoring and initiate a simulated demo call.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Link
+              to="/controller/login"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-red-700/60 hover:bg-red-600 text-white text-xs font-semibold rounded-xl border border-red-500/40 transition-colors shadow-md"
+            >
+              <span>Open Controller Dashboard</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {/* Controller Authenticated Badge */}

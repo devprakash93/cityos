@@ -92,9 +92,12 @@ function App() {
           {/* Public / Auth */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
-            <Route path="/controller/login" element={<ControllerLogin />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Route>
+
+          {/* Dedicated Controller Public Auth */}
+          <Route path="/controller/login" element={<ControllerLogin />} />
+          <Route path="/controller" element={<Navigate to="/controller/login" replace />} />
 
           {/* Protected Routes Wrapper */}
           <Route element={<ProtectedRoute />}>
