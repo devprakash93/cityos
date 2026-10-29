@@ -262,3 +262,9 @@ SPECTACULAR_SETTINGS = {
         {"name": "analytics", "description": "Aggregated statistics & reports"},
     ],
 }
+
+# ---------------------------------------------------------------------------
+# Emergency Controller Demo Authentication
+# ---------------------------------------------------------------------------
+EMERGENCY_CONTROLLER_ID = env("EMERGENCY_CONTROLLER_ID", default="EMERGENCY-CTRL-ODISHA")
+EMERGENCY_CONTROLLER_PASSWORD = env("EMERGENCY_CONTROLLER_PASSWORD", default="OdishaSecure2026!#")

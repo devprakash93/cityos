@@ -140,3 +140,131 @@ class EmergencyAlertViewSet(CityScopeMixin, viewsets.ModelViewSet):
             )
             
         return Response(EmergencyAlertSerializer(alert).data)
+
+
+import uuid
+from django.conf import settings
+from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.core import signing
+from rest_framework.views import APIView
+from rest_framework.throttling import UserRateThrottle
+
+
+class EmergencyControllerThrottle(UserRateThrottle):
+    rate = "15/minute"
+
+
+@extend_schema(tags=["emergency"])
+class EmergencyControllerAuthView(APIView):
+    """
+    POST /api/emergency/controller/auth/
+    Authenticates predefined Emergency Controller ID & password for demo purposes.
+    Credentials are validated securely on the backend against server environment configuration.
+    """
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [EmergencyControllerThrottle]
+
+    def post(self, request):
+        controller_id = request.data.get("controller_id", "").strip()
+        password = request.data.get("password", "")
+
+        if not controller_id or not password:
+            return Response(
+                {"success": False, "error": "Both Controller ID and password are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        expected_id = getattr(settings, "EMERGENCY_CONTROLLER_ID", "EMERGENCY-CTRL-ODISHA")
+        expected_pw = getattr(settings, "EMERGENCY_CONTROLLER_PASSWORD", "OdishaSecure2026!#")
+
+        id_valid = constant_time_compare(controller_id, expected_id)
+        pw_valid = constant_time_compare(password, expected_pw)
+
+        if not (id_valid and pw_valid):
+            return Response(
+                {"success": False, "error": "Invalid Emergency Controller ID or password. Access denied."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # Generate a signed demo token valid for 30 minutes
+        token = signing.dumps(
+            {
+                "controller_id": expected_id,
+                "user_id": request.user.id,
+                "timestamp": timezone.now().isoformat(),
+            },
+            salt="emergency-controller-auth",
+        )
+
+        return Response(
+            {
+                "success": True,
+                "message": "Emergency Controller authenticated successfully.",
+                "controller": {
+                    "controller_id": expected_id,
+                    "name": "Odisha Emergency Response Support System (ERSS - 112)",
+                    "unit": "Bhubaneswar Central Dispatch Control Desk",
+                    "status": "ONLINE",
+                    "authenticated_at": timezone.now().isoformat(),
+                },
+                "token": token,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+@extend_schema(tags=["emergency"])
+class EmergencyDemoCallView(APIView):
+    """
+    POST /api/emergency/controller/demo-call/
+    Simulates placing a call to the authenticated Emergency Controller.
+    Receives verified citizen coordinates and returns a simulated connected session.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        token = request.data.get("token") or request.headers.get("X-Controller-Token")
+        if not token:
+            return Response(
+                {"success": False, "error": "Authentication required. Please authenticate the Emergency Controller first."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            data = signing.loads(token, salt="emergency-controller-auth", max_age=1800)
+        except (signing.BadSignature, signing.SignatureExpired):
+            return Response(
+                {"success": False, "error": "Emergency Controller session expired or invalid. Please re-authenticate."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        lat = request.data.get("latitude")
+        lng = request.data.get("longitude")
+        accuracy = request.data.get("accuracy")
+        address = request.data.get("address", "Odisha, India")
+
+        call_id = f"DEMO-{uuid.uuid4().hex[:8].upper()}"
+
+        return Response(
+            {
+                "success": True,
+                "demo": True,
+                "call_id": call_id,
+                "status": "CONNECTED",
+                "controller": {
+                    "id": data.get("controller_id"),
+                    "desk": "Odisha State Emergency Response Centre (OSERC)",
+                    "officer": "Dispatcher on Duty (ERSS-112)",
+                },
+                "coordinates": {
+                    "latitude": lat,
+                    "longitude": lng,
+                    "accuracy": accuracy,
+                    "address": address,
+                },
+                "notice": "DEMO CALL ONLY: Simulated training and testing call. No actual phone call placed and real emergency services are NOT contacted.",
+            },
+            status=status.HTTP_200_OK,
+        )
+

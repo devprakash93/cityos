@@ -23,7 +23,7 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?.url?.includes('/emergency/controller/')) {
       // If we get a 401, we might want to clear local auth state
       // This will be handled by the AuthContext, but we can emit an event or just let the context catch it
       window.dispatchEvent(new Event('auth-unauthorized'));
