@@ -80,6 +80,10 @@ import Notifications from './pages/shared/Notifications';
 import Profile from './pages/shared/Profile';
 import ComingSoon from './pages/ComingSoon';
 
+// Controller Pages
+import ControllerLogin from './pages/controller/ControllerLogin';
+import ControllerDashboard from './pages/controller/ControllerDashboard';
+
 function App() {
   return (
     <BrowserRouter>
@@ -88,6 +92,7 @@ function App() {
           {/* Public / Auth */}
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/controller/login" element={<ControllerLogin />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
           </Route>
 
@@ -147,6 +152,11 @@ function App() {
                 <Route path="/worker/notifications" element={<Notifications />} />
                 <Route path="/worker/profile" element={<Profile />} />
               </Route>
+            </Route>
+
+            {/* Emergency Controller Routes */}
+            <Route element={<RoleRoute allowedRoles={['EMERGENCY_CONTROLLER', 'SUPER_ADMIN']} />}>
+              <Route path="/controller/dashboard" element={<ControllerDashboard />} />
             </Route>
 
             {/* Admin Routes */}

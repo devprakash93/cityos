@@ -116,7 +116,7 @@ class CityScopeMixin:
         user = self.request.user
         role_name = getattr(user.role, 'name', None) if getattr(user, 'role', None) else None
         
-        if role_name in [Role.SUPER_ADMIN, Role.OFFICER, Role.FIELD_WORKER]:
+        if role_name in [Role.SUPER_ADMIN, Role.OFFICER, Role.FIELD_WORKER, Role.EMERGENCY_CONTROLLER]:
             city_id = self.request.query_params.get("city_id")
             if city_id:
                 return qs.filter(**{f"{self.city_lookup_field}_id": city_id})

@@ -11,6 +11,7 @@ ROLE_CITIZEN = "CITIZEN"
 ROLE_OFFICER = "OFFICER"
 ROLE_FIELD_WORKER = "FIELD_WORKER"
 ROLE_SUPER_ADMIN = "SUPER_ADMIN"
+ROLE_EMERGENCY_CONTROLLER = "EMERGENCY_CONTROLLER"
 
 
 def _has_role(request, role_name: str) -> bool:
@@ -55,6 +56,34 @@ class IsSuperAdmin(BasePermission):
 
     def has_permission(self, request, view):
         return _has_role(request, ROLE_SUPER_ADMIN)
+
+
+class IsEmergencyController(BasePermission):
+    """Allow access only to users with the EMERGENCY_CONTROLLER role."""
+    message = "Access restricted to Emergency Controllers."
+
+    def has_permission(self, request, view):
+        return _has_role(request, ROLE_EMERGENCY_CONTROLLER)
+
+
+class IsEmergencyControllerOrAdmin(BasePermission):
+    """Allow Emergency Controllers and super administrators."""
+    message = "Access restricted to Emergency Controllers and administrators."
+
+    def has_permission(self, request, view):
+        return _has_role(request, ROLE_EMERGENCY_CONTROLLER) or _has_role(request, ROLE_SUPER_ADMIN)
+
+
+class IsControllerOrOfficerOrAdmin(BasePermission):
+    """Allow Emergency Controllers, Officers, and super administrators."""
+    message = "Access restricted to Emergency Controllers, officers, and administrators."
+
+    def has_permission(self, request, view):
+        return (
+            _has_role(request, ROLE_EMERGENCY_CONTROLLER)
+            or _has_role(request, ROLE_OFFICER)
+            or _has_role(request, ROLE_SUPER_ADMIN)
+        )
 
 
 class IsOfficerOrAdmin(BasePermission):

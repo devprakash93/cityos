@@ -14,6 +14,9 @@ export const ProtectedRoute = () => {
   }
 
   if (!user) {
+    if (window.location.pathname.startsWith('/controller')) {
+      return <Navigate to="/controller/login" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 
@@ -36,6 +39,9 @@ export const RoleRoute = ({ allowedRoles }) => {
   }
 
   if (!user) {
+    if (window.location.pathname.startsWith('/controller')) {
+      return <Navigate to="/controller/login" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 
@@ -46,6 +52,7 @@ export const RoleRoute = ({ allowedRoles }) => {
       case 'OFFICER': return <Navigate to="/officer/dashboard" replace />;
       case 'FIELD_WORKER': return <Navigate to="/worker/dashboard" replace />;
       case 'SUPER_ADMIN': return <Navigate to="/admin/dashboard" replace />;
+      case 'EMERGENCY_CONTROLLER': return <Navigate to="/controller/dashboard" replace />;
       default: return <Navigate to="/login" replace />;
     }
   }

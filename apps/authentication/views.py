@@ -87,6 +87,7 @@ class LoginView(APIView):
             "OFFICER": "/officer/dashboard",
             "FIELD_WORKER": "/worker/dashboard",
             "SUPER_ADMIN": "/admin/dashboard",
+            "EMERGENCY_CONTROLLER": "/controller/dashboard",
         }.get(role_name, "/dashboard")
 
         return Response(
@@ -97,6 +98,117 @@ class LoginView(APIView):
                 "user": UserDetailSerializer(user, context={"request": request}).data,
                 "tokens": tokens,
             }
+        )
+
+
+from django.conf import settings
+from django.db import models as db_models
+from django.utils.crypto import constant_time_compare
+from rest_framework.throttling import UserRateThrottle
+from apps.accounts.models import CustomUser, Role, Department, ActivityLog
+
+
+class ControllerLoginThrottle(UserRateThrottle):
+    rate = "15/minute"
+
+
+@extend_schema(tags=["auth"])
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class ControllerLoginView(APIView):
+    """
+    POST /api/auth/controller-login/
+    Dedicated authentication endpoint for Emergency Controllers.
+    Supports predefined demo Controller ID & password from server configuration.
+    Ensures the user account and role exist in the database and returns JWT + session.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    throttle_classes = [ControllerLoginThrottle]
+
+    def post(self, request):
+        controller_id = request.data.get("controller_id", "").strip()
+        password = request.data.get("password", "")
+
+        if not controller_id or not password:
+            return Response(
+                {"success": False, "error": "Both Controller ID and password are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        expected_id = getattr(settings, "EMERGENCY_CONTROLLER_ID", "EMERGENCY-CTRL-ODISHA")
+        expected_pw = getattr(settings, "EMERGENCY_CONTROLLER_PASSWORD", "OdishaSecure2026!#")
+
+        user = None
+        if constant_time_compare(controller_id, expected_id) and constant_time_compare(password, expected_pw):
+            role, _ = Role.objects.get_or_create(
+                name=Role.EMERGENCY_CONTROLLER,
+                defaults={"description": "Emergency Controller — oversees emergency incidents and dispatches."}
+            )
+            dept, _ = Department.objects.get_or_create(
+                code=Department.EMERGENCY,
+                defaults={"name": "Emergency Services", "is_active": True}
+            )
+            user, _ = CustomUser.objects.get_or_create(
+                username=expected_id,
+                defaults={
+                    "email": "emergency.controller@cityos.gov",
+                    "first_name": "Emergency",
+                    "last_name": "Controller",
+                    "role": role,
+                    "department": dept,
+                    "is_active": True,
+                    "is_staff": False,
+                    "is_superuser": False,
+                }
+            )
+            if user.role != role:
+                user.role = role
+                user.save(update_fields=["role"])
+            if not user.check_password(expected_pw):
+                user.set_password(expected_pw)
+                user.save(update_fields=["password"])
+        else:
+            try:
+                candidate = CustomUser.objects.get(
+                    db_models.Q(username=controller_id) | db_models.Q(email=controller_id),
+                    role__name=Role.EMERGENCY_CONTROLLER,
+                    is_active=True
+                )
+                if candidate.check_password(password):
+                    user = candidate
+            except CustomUser.DoesNotExist:
+                user = None
+
+        if not user:
+            return Response(
+                {"success": False, "error": "Invalid Emergency Controller credentials. Access denied."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        AuthService.login_user(request, user)
+        tokens = get_jwt_tokens(user)
+
+        try:
+            ActivityLog.objects.create(
+                user=user,
+                action="LOGIN",
+                model_name="CustomUser",
+                object_id=user.id,
+                message="Emergency Controller logged in.",
+                ip_address=request.META.get("REMOTE_ADDR"),
+            )
+        except Exception:
+            pass
+
+        return Response(
+            {
+                "success": True,
+                "message": "Emergency Controller authentication successful.",
+                "redirect": "/controller/dashboard",
+                "user": UserDetailSerializer(user, context={"request": request}).data,
+                "tokens": tokens,
+            },
+            status=status.HTTP_200_OK,
         )
 
 

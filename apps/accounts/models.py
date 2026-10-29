@@ -28,12 +28,14 @@ class Role(models.Model):
     OFFICER = "OFFICER"
     FIELD_WORKER = "FIELD_WORKER"
     SUPER_ADMIN = "SUPER_ADMIN"
+    EMERGENCY_CONTROLLER = "EMERGENCY_CONTROLLER"
 
     ROLE_CHOICES = [
         (CITIZEN, "Citizen"),
         (OFFICER, "Officer"),
         (FIELD_WORKER, "Field Worker"),
         (SUPER_ADMIN, "Super Admin"),
+        (EMERGENCY_CONTROLLER, "Emergency Controller"),
     ]
 
     name = models.CharField(max_length=30, unique=True, choices=ROLE_CHOICES, db_index=True)
@@ -199,6 +201,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def is_super_admin(self) -> bool:
         return self.role_name == Role.SUPER_ADMIN
+
+    def is_emergency_controller(self) -> bool:
+        return self.role_name == Role.EMERGENCY_CONTROLLER
 
 
 # ---------------------------------------------------------------------------

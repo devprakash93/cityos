@@ -77,6 +77,10 @@ class EmergencyIncident(SimulationTrackingModel):
     def __str__(self):
         return f"[{self.severity}] {self.incident_type} — {self.title}"
 
+    @property
+    def address(self) -> str:
+        return self.location.address if self.location and self.location.address else "Odisha, India"
+
 
 class Responder(models.Model):
     """An emergency response unit (fire truck, ambulance, police patrol)."""
